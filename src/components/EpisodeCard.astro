@@ -1,0 +1,38 @@
+---
+import { episodeUrl, formatHebrewDate, type Episode } from '@/lib/episodes';
+
+interface Props {
+  episode: Episode;
+  episodeNumber?: number;
+}
+
+const { episode, episodeNumber } = Astro.props;
+const { title, date, image, periodName } = episode.data;
+---
+
+<a href={episodeUrl(episode)} class="episode-list-item group transition-colors hover:bg-surface-container/50">
+  {
+    episodeNumber !== undefined && (
+      <span class="episode-list-marginalia hidden sm:block">
+        {String(episodeNumber).padStart(2, '0')}
+      </span>
+    )
+  }
+  {
+    image && (
+      <img
+        src={image}
+        alt=""
+        class="h-20 w-20 shrink-0 rounded border border-outline-variant/40 object-cover sm:h-24 sm:w-24"
+        loading="lazy"
+      />
+    )
+  }
+  <div class="min-w-0 flex-1">
+    <p class="label-marginalia">{formatHebrewDate(date)}</p>
+    <h3 class="mt-1 font-heading text-headline-md font-medium leading-snug text-ink-blue transition-colors group-hover:text-secondary">
+      {title}
+    </h3>
+    {periodName && <span class="badge-period mt-2">{periodName}</span>}
+  </div>
+</a>

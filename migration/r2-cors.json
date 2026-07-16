@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {
+      "allowed": {
+        "origins": ["https://www.kedma.xyz", "https://kedma.xyz"],
+        "methods": ["GET", "HEAD"],
+        "headers": ["Range", "Content-Type"]
+      },
+      "exposeHeaders": ["Content-Length", "Content-Type", "ETag", "Accept-Ranges"],
+      "maxAgeSeconds": 3600
+    }
+  ]
+}

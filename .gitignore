@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Migration inputs (large local files)
+Takeout/
+mp3/
+
+# Old migration output
+content/
+
+# Astro scaffold temp
+eminent-equator/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Environment
+.env
+.env.*

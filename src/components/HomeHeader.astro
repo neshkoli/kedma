@@ -1,0 +1,158 @@
+---
+import HomeHero from '@/components/HomeHero.astro';
+import HomeNav from '@/components/HomeNav.astro';
+
+interface Props {
+  current?: 'home' | 'episodes' | 'periods' | 'search';
+}
+
+const { current = 'home' } = Astro.props;
+---
+
+<div class="sticky top-0 z-50 bg-parchment-base" data-sticky-header>
+  <HomeHero />
+  <HomeNav current={current} />
+</div>
+
+<script>
+  function initHeroMapScroll() {
+    const sticky = document.querySelector('[data-sticky-header]');
+    if (!sticky || sticky.hasAttribute('data-hero-init')) return;
+
+    const viewport = sticky.querySelector('[data-hero-viewport]');
+    const scaleEl = sticky.querySelector('[data-hero-scale]');
+    const textClip = sticky.querySelector('[data-hero-text-clip]');
+    const textEl = sticky.querySelector('[data-hero-text]');
+    const line1 = sticky.querySelector('[data-hero-line-1]');
+    const line2 = sticky.querySelector('[data-hero-line-2]');
+    const img = sticky.querySelector('.hero-map-image');
+
+    if (!(viewport instanceof HTMLElement)) return;
+    if (!(scaleEl instanceof HTMLElement)) return;
+    if (!(textClip instanceof HTMLElement)) return;
+    if (!(textEl instanceof HTMLElement)) return;
+    if (!(line1 instanceof HTMLElement)) return;
+    if (!(line2 instanceof HTMLElement)) return;
+    if (!(img instanceof HTMLImageElement)) return;
+
+    sticky.setAttribute('data-hero-init', 'true');
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let expanded = 0;
+    let pinned = 0;
+    let maxShrink = 0;
+    let textFull = 0;
+    let textNaturalPinned = 0;
+    let textFitScale = 1;
+    let ticking = false;
+
+    function fitLine2ToWidth() {
+      line2.style.fontSize = '';
+      const maxWidth = textEl.clientWidth;
+      if (maxWidth <= 0) return;
+
+      const minPx = 7;
+      let size = parseFloat(getComputedStyle(line2).fontSize);
+
+      while (line2.scrollWidth > maxWidth && size > minPx) {
+        size -= 0.25;
+        line2.style.fontSize = `${size}px`;
+      }
+    }
+
+    function fitTextBlock() {
+      line1.style.transform = '';
+      line2.style.fontSize = '';
+      textEl.style.setProperty('--text-fit', '1');
+
+      let fit = 1;
+      const maxHeight = expanded * 0.88;
+
+      while (textEl.scrollHeight > maxHeight && fit > 0.5) {
+        fit -= 0.04;
+        textEl.style.setProperty('--text-fit', fit.toFixed(3));
+      }
+
+      fitLine2ToWidth();
+    }
+
+    function measure() {
+      const width = viewport.clientWidth || window.innerWidth;
+      expanded = width * (img.naturalHeight / img.naturalWidth || 1033 / 5162);
+      pinned = expanded / 3;
+      maxShrink = Math.max(expanded - pinned, 0);
+
+      fitTextBlock();
+      const clipRect = textClip.getBoundingClientRect();
+      const line1Rect = line1.getBoundingClientRect();
+      textFull = textEl.scrollHeight;
+      textNaturalPinned = Math.min(Math.max(line1Rect.bottom - clipRect.top, 0), textFull);
+      // How much the title needs to shrink so it fits fully inside the
+      // frozen (pinned) band, with nothing cropped.
+      textFitScale = textNaturalPinned > 0 ? Math.min(1, pinned / textNaturalPinned) : 1;
+    }
+
+    // The panel's visible height shrinks 1:1 with scrollY (feels like normal
+    // scrolling) until only its top third remains, then holds there (frozen)
+    // for the rest of the scroll. Reducing scrollY reverses the same path
+    // exactly. The map image is anchored to the viewport's stable top edge
+    // and kept at native scale, so shrinking the viewport height simply
+    // crops away its bottom, leaving the top third visible when frozen.
+    // The title ("קדמא") shrinks in sync (transform-origin: top right, so
+    // it visually moves upward as it shrinks while staying flush against
+    // the right edge — never drifting toward center/left) so that by the
+    // time the header is frozen, it's scaled down to exactly fit within
+    // that same pinned band, fully visible — never cropped. Lines 2/3 get
+    // progressively covered by the shrinking clip window and are fully
+    // hidden by then. Sub-pixel (unrounded) values avoid the 1px snapping
+    // that caused flickering.
+    function apply(scrollY: number) {
+      const shrink = Math.min(Math.max(scrollY, 0), maxShrink);
+      const p = maxShrink > 0 ? shrink / maxShrink : 0;
+      const height = expanded - shrink;
+      const textClipHeight = textFull - p * (textFull - pinned);
+      const textScale = 1 - p * (1 - textFitScale);
+
+      viewport.style.height = `${height}px`;
+      textClip.style.height = `${textClipHeight}px`;
+      line1.style.transform = `scale(${textScale.toFixed(4)})`;
+    }
+
+    function update() {
+      ticking = false;
+      apply(reducedMotion ? 0 : window.scrollY);
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+
+    function onReady() {
+      const run = () => {
+        measure();
+        update();
+      };
+
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(run).catch(run);
+      } else {
+        run();
+      }
+    }
+
+    if (img.complete) onReady();
+    else img.addEventListener('load', onReady, { once: true });
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => {
+      measure();
+      onScroll();
+    });
+  }
+
+  initHeroMapScroll();
+  document.addEventListener('astro:page-load', initHeroMapScroll);
+</script>

@@ -1,0 +1,28 @@
+---
+const nav = [
+  { href: '/', label: 'ראשי' },
+  { href: '/periods.html', label: 'תקופות' },
+  { href: '/search.html', label: 'חיפוש' },
+];
+---
+
+<header class="border-b border-ink-blue/20 bg-surface-container-low/80 backdrop-blur-sm">
+  <div class="page-container flex flex-wrap items-center justify-between gap-4 py-4 sm:py-5">
+    <a href="/" class="group">
+      <p class="font-heading text-xl font-semibold text-ink-blue transition-colors group-hover:text-aged-gold sm:text-headline-md">
+        קדמא
+      </p>
+      <p class="mt-0.5 hidden font-body text-label-sm text-on-surface-variant sm:block">פודקאסט על היסטוריה יהודית</p>
+    </a>
+    <nav class="flex items-center gap-4 sm:gap-6">
+      {nav.map((item) => (
+        <a
+          href={item.href}
+          class="font-body text-label-sm uppercase tracking-widest text-on-surface-variant transition hover:text-ink-blue hover:underline hover:decoration-aged-gold hover:underline-offset-4 sm:text-label-lg"
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>

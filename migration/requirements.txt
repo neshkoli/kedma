@@ -1,0 +1,3 @@
+html2text>=2024.2.26
+requests>=2.31.0
+PyYAML>=6.0

@@ -1,0 +1,45 @@
+---
+interface Props {
+  current?: 'home' | 'episodes' | 'periods' | 'search';
+}
+
+const { current = 'home' } = Astro.props;
+
+const nav = [
+  { id: 'home' as const, href: '/', label: 'בית' },
+  { id: 'episodes' as const, href: '/#archive', label: 'פרקים' },
+  { id: 'periods' as const, href: '/periods.html', label: 'תקופות' },
+];
+---
+
+<nav class="border-b border-outline-variant bg-parchment-base/95 backdrop-blur-md">
+  <div class="page-container flex items-center justify-between py-4">
+    <div class="flex items-center gap-6 sm:gap-8">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'font-body text-label-lg uppercase tracking-widest transition-colors duration-300',
+              current === item.id
+                ? 'border-b-2 border-aged-gold pb-1 font-bold text-aged-gold'
+                : 'text-on-surface-variant hover:text-aged-gold',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+    <a
+      href="/search.html"
+      class="rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
+      aria-label="חיפוש"
+    >
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+    </a>
+  </div>
+</nav>

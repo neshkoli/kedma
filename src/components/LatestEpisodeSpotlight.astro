@@ -1,0 +1,41 @@
+---
+import { episodeUrl, episodeSnippet, formatHebrewDate, type Episode } from '@/lib/episodes';
+
+interface Props {
+  episode: Episode;
+}
+
+const { episode } = Astro.props;
+const { title, date, image, periodName } = episode.data;
+const { text: snippet } = episodeSnippet(episode);
+const url = episodeUrl(episode);
+---
+
+<section class="border-b border-outline-variant bg-surface-container-low/50">
+  <a href={url} class="group block transition-colors hover:bg-surface-container-low">
+    <div class="page-container py-10 md:py-12">
+      <div class="flex flex-col items-stretch gap-8 md:flex-row md:gap-12">
+        {
+          image && (
+            <div class="aspect-square w-full shrink-0 overflow-hidden manuscript-border md:w-2/5 lg:w-1/3">
+              <img src={image} alt="" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            </div>
+          )
+        }
+        <div class="flex flex-1 flex-col justify-center">
+          <span class="mb-2 block font-body text-label-sm font-bold uppercase tracking-widest text-aged-gold">
+            הפרק האחרון
+          </span>
+          <h2 class="mb-3 font-heading text-headline-lg-mobile font-semibold leading-tight text-primary transition-colors duration-300 group-hover:text-aged-gold md:text-headline-lg">
+            {title}
+          </h2>
+          <p class="mb-3 font-body text-body-md text-on-surface-variant">{formatHebrewDate(date)}</p>
+          {periodName && <span class="badge-period">{periodName}</span>}
+          {snippet && (
+            <p class="mt-4 break-words font-body text-body-lg leading-relaxed text-on-surface-variant">{snippet}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  </a>
+</section>

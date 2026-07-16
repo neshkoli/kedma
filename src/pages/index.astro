@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
+import LatestEpisodeSpotlight from '@/components/LatestEpisodeSpotlight.astro';
+import EpisodeArchiveCard from '@/components/EpisodeArchiveCard.astro';
+import { getEpisodes } from '@/lib/episodes';
+
+const episodes = await getEpisodes();
+const [latest, ...rest] = episodes;
+---
+
+<BaseLayout
+  title="קדמא"
+  description="קדמא - פודקאסט על אנשים וארועים בהיסטוריה היהודית עם נעם אשכולי"
+>
+  <HomeHeader current="home" />
+
+  <main>
+    {latest && <LatestEpisodeSpotlight episode={latest} />}
+
+    <section id="archive" class="page-container py-12 md:py-16">
+      <div class="mb-10 flex items-center justify-between border-b border-aged-gold pb-6">
+        <h2 class="font-heading text-headline-lg-mobile font-semibold text-primary md:text-headline-lg">
+          ארכיון הפרקים
+        </h2>
+        <p class="label-marginalia text-slate-gray">{episodes.length} פרקים</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-12">
+        {rest.map((episode) => (
+          <EpisodeArchiveCard episode={episode} />
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

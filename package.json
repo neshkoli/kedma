@@ -1,0 +1,19 @@
+{
+  "name": "kedma",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/generate-search-index.mjs && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/tailwind": "^6.0.2",
+    "@tailwindcss/typography": "^0.5.19",
+    "astro": "^5.16.6",
+    "fuse.js": "^7.1.0",
+    "tailwindcss": "^3.4.19"
+  }
+}

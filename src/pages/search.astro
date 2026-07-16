@@ -1,0 +1,151 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import { uniqueTags } from '@/lib/episodes';
+import { getCollection } from 'astro:content';
+
+const episodes = await getCollection('episodes');
+const tags = uniqueTags(episodes);
+---
+
+<BaseLayout title="חיפוש" description="חיפוש פרקי פודקאסט קדמא">
+  <Header />
+
+  <main class="page-container py-8 lg:py-12">
+    <header class="mb-8 border-b border-outline-variant/60 pb-6">
+      <h1 class="section-title">חיפוש פרקים</h1>
+      <p class="mt-3 font-body text-body-md text-on-surface-variant">
+        חפשו לפי כותרת, תוכן או תגית
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Panel (Tags) -->
+      <aside class="lg:col-span-1">
+        {
+          tags.length > 0 && (
+            <div>
+              <p class="label-marginalia mb-3">תגיות</p>
+              <div class="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <button type="button" class="tag-filter badge-tag cursor-pointer" data-tag={tag}>
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      </aside>
+
+      <!-- Main Panel (Search + Results) -->
+      <div class="lg:col-span-2">
+        <div class="mb-6">
+          <label for="search-input" class="label-marginalia mb-2 block">חיפוש</label>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="חפשו לפי כותרת, תוכן או תגית..."
+            class="input-field"
+          />
+        </div>
+
+        <div id="search-results" class="flex flex-col"></div>
+        <p id="search-empty" class="hidden font-body text-body-md text-on-surface-variant">לא נמצאו תוצאות.</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    import Fuse from 'fuse.js';
+
+    type SearchItem = {
+      title: string;
+      slug: string;
+      date: string;
+      tags: string[];
+      snippet: string;
+      url: string;
+    };
+
+    let items: SearchItem[] = [];
+    let fuse: Fuse<SearchItem> | null = null;
+    let activeTag = new URLSearchParams(window.location.search).get('tag');
+
+    async function initSearch() {
+      const input = document.getElementById('search-input') as HTMLInputElement;
+      const resultsEl = document.getElementById('search-results') as HTMLDivElement;
+      const emptyEl = document.getElementById('search-empty') as HTMLParagraphElement;
+      const tagButtons = document.querySelectorAll<HTMLButtonElement>('.tag-filter');
+
+      if (!input || !resultsEl || !emptyEl) return;
+
+      try {
+        const response = await fetch('/search-index.json');
+        items = await response.json();
+        fuse = new Fuse(items, {
+          keys: ['title', 'snippet', 'tags'],
+          threshold: 0.35,
+          ignoreLocation: true,
+        });
+
+        if (activeTag) {
+          input.value = activeTag;
+        }
+        renderResults(resultsEl, emptyEl, activeTag ? filterByTag(activeTag) : items.slice(0, 20));
+
+        // Attach listeners only after data is loaded
+        input.addEventListener('input', () => {
+          const query = input.value.trim();
+          if (!fuse || !query) {
+            renderResults(resultsEl, emptyEl, items.slice(0, 20));
+            return;
+          }
+          renderResults(resultsEl, emptyEl, fuse.search(query).map((result) => result.item));
+        });
+
+        tagButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const tag = button.dataset.tag ?? '';
+            activeTag = tag;
+            input.value = tag;
+            renderResults(resultsEl, emptyEl, filterByTag(tag));
+          });
+        });
+      } catch (e) {
+        console.error("Failed to load search index:", e);
+      }
+    }
+
+    function filterByTag(tag: string) {
+      return items.filter((item) => item.tags.includes(tag));
+    }
+
+    function renderResults(resultsEl: HTMLDivElement, emptyEl: HTMLParagraphElement, results: SearchItem[]) {
+      resultsEl.innerHTML = '';
+      emptyEl.classList.toggle('hidden', results.length > 0);
+
+      for (const item of results) {
+        const article = document.createElement('article');
+        article.className = 'episode-list-item transition-colors hover:bg-surface-container/50';
+        article.innerHTML = `
+          <p class="label-marginalia">${item.date}</p>
+          <div class="min-w-0 flex-1">
+            <h2 class="font-heading text-headline-md font-medium text-ink-blue">
+              ${item.title}
+            </h2>
+            <p class="mt-2 font-body text-body-md text-on-surface-variant">${item.snippet}</p>
+          </div>
+        `;
+        article.style.cursor = 'pointer';
+        article.onclick = () => {
+          window.location.href = item.url;
+        };
+        resultsEl.appendChild(article);
+      }
+    }
+
+    // Initialize when the DOM is ready
+    document.addEventListener('DOMContentLoaded', initSearch);
+  </script>
+</BaseLayout>

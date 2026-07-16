@@ -1,0 +1,66 @@
+---
+import { episodeUrl, episodeSnippet, formatHebrewDate, type Episode } from '@/lib/episodes';
+
+interface Props {
+  episode: Episode;
+}
+
+const { episode } = Astro.props;
+const { title, date, image, periodName, tags } = episode.data;
+const { text: snippet, truncated } = episodeSnippet(episode);
+const url = episodeUrl(episode);
+---
+
+<a href={url} class="group block overflow-hidden rounded border border-outline-variant/30 bg-surface/60 p-5 transition-colors hover:bg-surface-container-low/80 md:p-6">
+  <div class="flex flex-col items-start gap-6">
+    {
+      image && (
+        <div class="aspect-square w-full shrink-0 overflow-hidden manuscript-border">
+          <img
+            src={image}
+            alt=""
+            class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      )
+    }
+    <div class="min-w-0 flex-1">
+      <div class="mb-3 flex flex-wrap items-center gap-3">
+        <span class="font-body text-label-sm font-bold text-aged-gold">{formatHebrewDate(date)}</span>
+        {periodName && (
+          <span class="rounded bg-surface-container-high px-2 py-0.5 font-body text-[10px] font-bold text-outline">
+            {periodName}
+          </span>
+        )}
+      </div>
+      <h3 class="mb-3 font-heading text-headline-md font-medium transition-colors duration-300 group-hover:text-aged-gold">
+        {title}
+      </h3>
+      {snippet && (
+        <p class="mb-5 break-words font-body text-body-md leading-relaxed text-on-surface-variant">{snippet}</p>
+      )}
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        {
+          tags.length > 0 && (
+            <div class="flex flex-wrap gap-2">
+              {tags.slice(0, 3).map((tag) => (
+                <span class="font-body text-label-sm text-slate-gray">#{tag}</span>
+              ))}
+            </div>
+          )
+        }
+        {
+          truncated && (
+            <span class="inline-flex items-center gap-1 font-body text-label-lg font-bold text-ink-blue transition-colors group-hover:text-aged-gold">
+              קרא עוד
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </span>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</a>

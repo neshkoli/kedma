@@ -1,0 +1,22 @@
+---
+interface Props {
+  pageId: string;
+  pageUrl: string;
+  pageTitle: string;
+  appId?: string;
+}
+
+const { pageId, pageUrl, pageTitle, appId = import.meta.env.PUBLIC_CUSDIS_APP_ID } = Astro.props;
+---
+
+{appId ? (
+  <section class="mt-12 border-t border-outline-variant/60 pt-8">
+    <h2 class="section-title mb-4">תגובות</h2>
+    <div id="cusdis_thread" data-host="https://cusdis.com" data-app-id={appId} data-page-id={pageId} data-page-url={pageUrl} data-page-title={pageTitle} data-lang="he" />
+    <script is:inline src="https://cusdis.com/js/cusdis.es.js" async defer />
+  </section>
+) : (
+  <section class="mt-12 rounded border border-dashed border-outline-variant p-6 text-center text-on-surface-variant">
+    <p>תגובות יופעלו לאחר הגדרת Cusdis.</p>
+  </section>
+)}

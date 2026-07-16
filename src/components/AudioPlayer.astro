@@ -1,0 +1,54 @@
+---
+interface Props {
+  src: string;
+  title: string;
+}
+
+const { src, title } = Astro.props;
+const filename = src.split('/').pop() ?? 'episode';
+---
+
+<div class="audio-bar">
+  <div class="page-container flex flex-col gap-3 py-4">
+    <p class="label-marginalia">מאזינים לפרק</p>
+    <p class="font-heading text-body-md font-medium text-ink-blue">{title}</p>
+    <audio
+      id="episode-audio"
+      controls
+      preload="metadata"
+      src={src}
+      title={title}
+    >
+      הדפדפן שלך לא תומך בנגן אודיו.
+    </audio>
+    <a
+      href={src}
+      download={filename}
+      class="btn-secondary w-fit"
+      data-download-link
+    >
+      הורדת הפרק
+    </a>
+  </div>
+</div>
+
+<script>
+  const audio = document.getElementById('episode-audio') as HTMLAudioElement | null;
+  const downloadLink = document.querySelector('[data-download-link]');
+
+  if (audio) {
+    audio.addEventListener('play', () => {
+      window.dispatchEvent(new CustomEvent('kedma:audio_play'));
+    });
+    audio.addEventListener('pause', () => {
+      window.dispatchEvent(new CustomEvent('kedma:audio_pause'));
+    });
+    audio.addEventListener('ended', () => {
+      window.dispatchEvent(new CustomEvent('kedma:audio_complete'));
+    });
+  }
+
+  downloadLink?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('kedma:file_download'));
+  });
+</script>
