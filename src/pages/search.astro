@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Header from '@/components/Header.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
 import { uniqueTags } from '@/lib/episodes';
 import { getCollection } from 'astro:content';
 
@@ -9,7 +9,7 @@ const tags = uniqueTags(episodes);
 ---
 
 <BaseLayout title="חיפוש" description="חיפוש פרקי פודקאסט קדמא">
-  <Header />
+  <HomeHeader current="search" pinned />
 
   <main class="page-container py-8 lg:py-12">
     <header class="mb-8 border-b border-outline-variant/60 pb-6">

@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { episodeSnippetFromBody } from '../src/lib/episodeSnippet.mjs';
 
 const EPISODES_DIR = 'src/content/episodes';
 const OUTPUT = 'public/search-index.json';
@@ -47,12 +48,7 @@ for (const file of files) {
   const { data, body } = parseFrontmatter(raw);
   if (!data.slug || !data.title) continue;
 
-  const snippet = body
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 500);
+  const snippet = episodeSnippetFromBody(body);
 
   index.push({
     title: data.title,

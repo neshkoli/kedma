@@ -9,8 +9,8 @@ dist/
 Takeout/
 mp3/
 
-# Old migration output
-content/
+# Old migration output (repo root only — not src/content/)
+/content/
 
 # Astro scaffold temp
 eminent-equator/

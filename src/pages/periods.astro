@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Header from '@/components/Header.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
 import { episodeUrl, episodesByPeriod, getEpisodes } from '@/lib/episodes';
 
 const episodes = await getEpisodes();
@@ -8,7 +8,7 @@ const grouped = episodesByPeriod(episodes);
 ---
 
 <BaseLayout title="תקופות" description="האזינו לפודקאסט קדמא לפי סדר תקופות היסטוריות">
-  <Header />
+  <HomeHeader current="periods" pinned />
 
   <main class="page-container py-8 lg:py-12">
     <header class="mb-10 border-b border-outline-variant/60 pb-6">

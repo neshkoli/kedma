@@ -35,28 +35,7 @@ export function uniqueTags(episodes: Episode[]): string[] {
   return [...tags].sort((a, b) => a.localeCompare(b, 'he'));
 }
 
-function episodePlainTextPrefix(body: string): string {
-  const markdownPatterns = [
-    /\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)/, // linked image: [![](...)])](url)
-    /!\[[^\]]*\]\([^)]*\)/, // image: ![](...)
-    /\[[^\]]*\]\([^)]*\)/, // link: [text](url) or [](url)
-    /<iframe\b/i,
-  ];
-
-  let end = body.length;
-  for (const pattern of markdownPatterns) {
-    const match = body.match(pattern);
-    if (match?.index !== undefined) {
-      end = Math.min(end, match.index);
-    }
-  }
-
-  return body
-    .slice(0, end)
-    .replace(/[#>*_`~-]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+import { episodePlainTextPrefix } from './episodeSnippet.mjs';
 
 export function episodeSnippet(
   episode: Episode,
