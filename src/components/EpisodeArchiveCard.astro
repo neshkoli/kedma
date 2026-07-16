@@ -1,5 +1,6 @@
 ---
 import { episodeUrl, episodeSnippet, formatHebrewDate, type Episode } from '@/lib/episodes';
+import { withBase } from '@/lib/paths';
 
 interface Props {
   episode: Episode;
@@ -17,7 +18,7 @@ const url = episodeUrl(episode);
       image && (
         <div class="aspect-square w-full shrink-0 overflow-hidden manuscript-border">
           <img
-            src={image}
+            src={withBase(image)}
             alt=""
             class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"

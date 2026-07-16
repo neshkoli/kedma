@@ -1,4 +1,6 @@
 ---
+import { withBase } from '@/lib/paths';
+
 interface Props {
   current?: 'home' | 'episodes' | 'periods' | 'search';
 }
@@ -6,9 +8,9 @@ interface Props {
 const { current = 'home' } = Astro.props;
 
 const nav = [
-  { id: 'home' as const, href: '/', label: 'בית' },
-  { id: 'episodes' as const, href: '/#archive', label: 'פרקים' },
-  { id: 'periods' as const, href: '/periods.html', label: 'תקופות' },
+  { id: 'home' as const, href: withBase(''), label: 'בית' },
+  { id: 'episodes' as const, href: `${withBase('')}#archive`, label: 'פרקים' },
+  { id: 'periods' as const, href: withBase('periods.html'), label: 'תקופות' },
 ];
 ---
 
@@ -32,7 +34,7 @@ const nav = [
       }
     </div>
     <a
-      href="/search.html"
+      href={withBase('search.html')}
       class="rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
       aria-label="חיפוש"
     >

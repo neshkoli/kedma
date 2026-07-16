@@ -1,4 +1,6 @@
 ---
+import { withBase } from '@/lib/paths';
+
 interface Props {
   pinned?: boolean;
 }
@@ -11,7 +13,7 @@ const { pinned = false } = Astro.props;
     <div class="hero-scale" data-hero-scale>
       <div class="hero-map-track" data-hero-map-track aria-hidden="true">
         <img
-          src="/images/background_map.jpg"
+          src={withBase('images/background_map.jpg')}
           alt=""
           class="hero-map-image"
           width="5162"

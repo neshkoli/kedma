@@ -5,6 +5,7 @@ import HomeHeader from '@/components/HomeHeader.astro';
 import AudioPlayer from '@/components/AudioPlayer.astro';
 import CusdisComments from '@/components/CusdisComments.astro';
 import { episodeUrl, formatHebrewDate, slugParts, type Episode } from '@/lib/episodes';
+import { withBase } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const episodes = await getCollection('episodes');
@@ -50,14 +51,14 @@ const pageUrl = new URL(episodeUrl(episode), Astro.site).toString();
         <div class="flex flex-wrap gap-2 pt-1">
           {
             periodName && (
-              <a href="/periods.html" class="badge-period">
+              <a href={withBase('periods.html')} class="badge-period">
                 {periodName}
               </a>
             )
           }
           {
             tags.map((tag) => (
-              <a href={`/search.html?tag=${encodeURIComponent(tag)}`} class="badge-tag">
+              <a href={`${withBase('search.html')}?tag=${encodeURIComponent(tag)}`} class="badge-tag">
                 {tag}
               </a>
             ))
@@ -67,7 +68,7 @@ const pageUrl = new URL(episodeUrl(episode), Astro.site).toString();
         {
           image && (
             <img
-              src={image}
+              src={withBase(image)}
               alt=""
               class="mt-6 w-full rounded border border-outline-variant/40 object-cover"
             />

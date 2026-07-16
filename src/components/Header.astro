@@ -1,14 +1,16 @@
 ---
+import { withBase } from '@/lib/paths';
+
 const nav = [
-  { href: '/', label: 'ראשי' },
-  { href: '/periods.html', label: 'תקופות' },
-  { href: '/search.html', label: 'חיפוש' },
+  { href: withBase(''), label: 'ראשי' },
+  { href: withBase('periods.html'), label: 'תקופות' },
+  { href: withBase('search.html'), label: 'חיפוש' },
 ];
 ---
 
 <header class="border-b border-ink-blue/20 bg-surface-container-low/80 backdrop-blur-sm">
   <div class="page-container flex flex-wrap items-center justify-between gap-4 py-4 sm:py-5">
-    <a href="/" class="group">
+    <a href={withBase('')} class="group">
       <p class="font-heading text-xl font-semibold text-ink-blue transition-colors group-hover:text-aged-gold sm:text-headline-md">
         קדמא
       </p>

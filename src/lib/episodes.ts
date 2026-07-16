@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { withBase } from '@/lib/paths';
 
 export type Episode = CollectionEntry<'episodes'>;
 
@@ -8,7 +9,7 @@ export async function getEpisodes(): Promise<Episode[]> {
 }
 
 export function episodeUrl(episode: Episode): string {
-  return `/${episode.data.slug}`;
+  return withBase(episode.data.slug);
 }
 
 export function formatHebrewDate(date: Date): string {

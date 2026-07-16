@@ -4,6 +4,13 @@ import { episodeSnippetFromBody } from '../src/lib/episodeSnippet.mjs';
 
 const EPISODES_DIR = 'src/content/episodes';
 const OUTPUT = 'public/search-index.json';
+const base = process.env.ASTRO_BASE ?? '/';
+
+function withBase(path) {
+  const root = base.endsWith('/') ? base : `${base}/`;
+  const normalized = path.startsWith('/') ? path.slice(1) : path;
+  return `${root}${normalized}`;
+}
 
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -56,7 +63,7 @@ for (const file of files) {
     date: data.date,
     tags: data.tags ?? [],
     snippet,
-    url: `/${data.slug}`,
+    url: withBase(data.slug),
   });
 }
 
