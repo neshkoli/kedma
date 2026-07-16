@@ -22,3 +22,4 @@ eminent-equator/
 # Environment
 .env
 .env.*
+!.env.example

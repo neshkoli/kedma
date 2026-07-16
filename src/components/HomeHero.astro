@@ -1,8 +1,13 @@
 ---
+interface Props {
+  pinned?: boolean;
+}
+
+const { pinned = false } = Astro.props;
 ---
 
 <header class="hero-header border-b-4 border-aged-gold">
-  <div class="hero-viewport" data-hero-viewport>
+  <div class="hero-viewport" data-hero-viewport class:list={{ 'hero-viewport-pinned': pinned }}>
     <div class="hero-scale" data-hero-scale>
       <div class="hero-map-track" data-hero-map-track aria-hidden="true">
         <img

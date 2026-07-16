@@ -4,13 +4,19 @@ import HomeNav from '@/components/HomeNav.astro';
 
 interface Props {
   current?: 'home' | 'episodes' | 'periods' | 'search';
+  /** Start in the scrolled-down (top third) state without scroll animation. */
+  pinned?: boolean;
 }
 
-const { current = 'home' } = Astro.props;
+const { current = 'home', pinned = false } = Astro.props;
 ---
 
-<div class="sticky top-0 z-50 bg-parchment-base" data-sticky-header>
-  <HomeHero />
+<div
+  class="sticky top-0 z-50 bg-parchment-base"
+  data-sticky-header
+  data-hero-pinned={pinned || undefined}
+>
+  <HomeHero pinned={pinned} />
   <HomeNav current={current} />
 </div>
 
@@ -37,6 +43,7 @@ const { current = 'home' } = Astro.props;
 
     sticky.setAttribute('data-hero-init', 'true');
 
+    const pinnedMode = sticky.hasAttribute('data-hero-pinned');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let expanded = 0;
     let pinned = 0;
@@ -120,7 +127,11 @@ const { current = 'home' } = Astro.props;
 
     function update() {
       ticking = false;
-      apply(reducedMotion ? 0 : window.scrollY);
+      if (pinnedMode) {
+        apply(maxShrink);
+      } else {
+        apply(reducedMotion ? 0 : window.scrollY);
+      }
     }
 
     function onScroll() {
@@ -146,7 +157,9 @@ const { current = 'home' } = Astro.props;
     if (img.complete) onReady();
     else img.addEventListener('load', onReady, { once: true });
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    if (!pinnedMode) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
     window.addEventListener('resize', () => {
       measure();
       onScroll();

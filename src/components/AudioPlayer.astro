@@ -9,25 +9,30 @@ const filename = src.split('/').pop() ?? 'episode';
 ---
 
 <div class="audio-bar">
-  <div class="page-container flex flex-col gap-3 py-4">
-    <p class="label-marginalia">מאזינים לפרק</p>
-    <p class="font-heading text-body-md font-medium text-ink-blue">{title}</p>
+  <div class="page-container flex items-center gap-3 py-2">
     <audio
       id="episode-audio"
       controls
       preload="metadata"
       src={src}
       title={title}
+      class="min-w-0 flex-1"
     >
       הדפדפן שלך לא תומך בנגן אודיו.
     </audio>
     <a
       href={src}
       download={filename}
-      class="btn-secondary w-fit"
+      class="shrink-0 rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
       data-download-link
+      aria-label="הורדה"
+      title="הורדה"
     >
-      הורדת הפרק
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M12 3v12"></path>
+        <path d="M7 10l5 5 5-5"></path>
+        <path d="M5 21h14"></path>
+      </svg>
     </a>
   </div>
 </div>

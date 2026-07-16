@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Header from '@/components/Header.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
 import AudioPlayer from '@/components/AudioPlayer.astro';
 import CusdisComments from '@/components/CusdisComments.astro';
 import { episodeUrl, formatHebrewDate, slugParts, type Episode } from '@/lib/episodes';
@@ -37,9 +37,9 @@ const pageUrl = new URL(episodeUrl(episode), Astro.site).toString();
 ---
 
 <BaseLayout title={title} description={`${title} - פודקאסט קדמא`} image={image}>
-  <Header />
+  <HomeHeader current="episodes" pinned />
 
-  <main class="page-container py-8 pb-36 lg:py-12">
+  <main class="page-container py-8 pb-24 lg:py-12">
     <article class="mx-auto max-w-3xl">
       <header class="mb-10 space-y-4">
         <p class="label-marginalia">{formatHebrewDate(date)}</p>

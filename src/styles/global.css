@@ -94,7 +94,9 @@
   }
 
   .prose-kedma iframe {
-    @apply mx-auto my-6 aspect-video w-full max-w-2xl rounded;
+    @apply mx-auto my-6 block w-full max-w-2xl rounded;
+    aspect-ratio: 16 / 9;
+    height: auto !important;
   }
 
   .prose-kedma img {
@@ -131,6 +133,14 @@
     --hero-pinned: calc(var(--hero-expanded) / 3);
     @apply relative w-full overflow-hidden;
     height: var(--hero-expanded);
+  }
+
+  .hero-viewport-pinned {
+    height: var(--hero-pinned);
+  }
+
+  .hero-viewport-pinned .hero-text-clip {
+    height: var(--hero-pinned);
   }
 
   .hero-scale {
