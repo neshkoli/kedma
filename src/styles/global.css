@@ -99,6 +99,19 @@
     height: auto !important;
   }
 
+  .prose-kedma .kedma-media {
+    @apply mx-auto my-6 flex w-full max-w-2xl flex-col items-center;
+  }
+
+  .prose-kedma .kedma-media img,
+  .prose-kedma .kedma-media iframe {
+    @apply my-0;
+  }
+
+  .prose-kedma .kedma-media sub {
+    @apply mt-2 block text-center text-sm text-on-surface-variant;
+  }
+
   .prose-kedma img {
     @apply mx-auto rounded border border-outline-variant/40;
   }

@@ -1,0 +1,36 @@
+---
+title: פרק 1 • הגאונים
+date: '2018-11-14'
+slug: 2018/11/episode-1.html
+tags:
+- פומפדיתא
+- איסלאם
+- רב סעדיה גאון
+- בבל
+- הגאונים
+- סורא
+audioUrl: https://audio.kedma.xyz/episodes/2018/11/episode-1.m4a
+audioFile: 1- פרק 1 • הגאונים.m4a
+---
+
+הפרק הראשון של קדמא עלה לאוויר!  
+  
+
+  
+כשאתם שומעים את המלה "גאון", מה עובר לכם בראש? על פי המלון גאון הוא מי שמחונן בשכל או בכושר יצירה בלתי רגילים ומפליא בכישרונתיו הטבועים בו מלידה. האם כולם היו כאלה בתקופת הגאונים?
+
+על כך ועוד בפרק בראשון  
+
+[![לטקסט המלא של הפרק](/images/episodes/2018/11/episode-1/The-Early-Geonic-Period-200x125.jpg)](/images/episodes/2018/11/episode-1/The-Early-Geonic-Period-200x125.jpg)
+
+  
+
+  
+
+  
+
+[להורדת הפרק למחשב](https://1drv.ms/u/s!AhnqDJDnCwwL9w--vzYw_4iyskHe?e=hjLLZK)
+
+![](https://www.youtube.com/embed/pAXyaG0wkzg)
+
+
