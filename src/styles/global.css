@@ -2,14 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'EFT Tamar';
-  src: url('../fonts/EFT_Tamar.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @layer base {
   html {
     @apply scroll-smooth;
@@ -135,6 +127,14 @@
 
   .episode-list-marginalia {
     @apply w-16 shrink-0 pt-0.5 text-start label-marginalia;
+  }
+
+  .periods-table-row {
+    @apply cursor-pointer;
+  }
+
+  .periods-table-thumb {
+    @apply aspect-square;
   }
 
   .hero-header {

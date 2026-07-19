@@ -20,6 +20,25 @@ export function formatHebrewDate(date: Date): string {
   });
 }
 
+/** RSS durations are HH:MM:SS; display as MM:SS for sub-hour episodes. */
+export function formatEpisodeDuration(duration: string): string {
+  const parts = duration.split(':').map((part) => Number(part));
+  if (parts.some(Number.isNaN)) return duration;
+
+  if (parts.length === 3) {
+    const [hours, minutes, seconds] = parts;
+    const totalMinutes = hours * 60 + minutes;
+    return `${totalMinutes}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  if (parts.length === 2) {
+    const [minutes, seconds] = parts;
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  return duration;
+}
+
 export function slugParts(slug: string): { year: string; month: string; file: string } | null {
   const match = slug.match(/^(\d{4})\/(\d{2})\/(.+)$/);
   if (!match) return null;

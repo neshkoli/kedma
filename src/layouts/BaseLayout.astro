@@ -10,6 +10,7 @@ interface Props {
 
 const { title, description = 'קדמא - פודקאסט על היסטוריה יהודית עם נעם אשכולי', image } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const tamarFontUrl = withBase('fonts/EFT_Tamar.ttf');
 ---
 
 <!doctype html>
@@ -26,6 +27,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Noto+Sans+Hebrew:wght@400;500;600&family=Noto+Serif+Hebrew:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+    <style set:html={`@font-face {
+  font-family: 'EFT Tamar';
+  src: url('${tamarFontUrl}') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}`}></style>
     <title>{title} | קדמא</title>
     {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
   </head>

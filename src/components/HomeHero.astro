@@ -6,23 +6,45 @@ interface Props {
 }
 
 const { pinned = false } = Astro.props;
+const homeHref = withBase('');
 ---
 
 <header class="hero-header border-b-4 border-aged-gold">
   <div class="hero-viewport" data-hero-viewport class:list={{ 'hero-viewport-pinned': pinned }}>
     <div class="hero-scale" data-hero-scale>
-      <div class="hero-map-track" data-hero-map-track aria-hidden="true">
-        <img
-          src={withBase('images/background_map.jpg')}
-          alt=""
-          class="hero-map-image"
-          width="5162"
-          height="1033"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </div>
-      <div class="hero-gradient" aria-hidden="true"></div>
+      {
+        pinned ? (
+          <a href={homeHref} class="block cursor-pointer" aria-label="קדמא - דף הבית">
+            <div class="hero-map-track" data-hero-map-track aria-hidden="true">
+              <img
+                src={withBase('images/background_map.jpg')}
+                alt=""
+                class="hero-map-image"
+                width="5162"
+                height="1033"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </div>
+            <div class="hero-gradient" aria-hidden="true" />
+          </a>
+        ) : (
+          <>
+            <div class="hero-map-track" data-hero-map-track aria-hidden="true">
+              <img
+                src={withBase('images/background_map.jpg')}
+                alt=""
+                class="hero-map-image"
+                width="5162"
+                height="1033"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </div>
+            <div class="hero-gradient" aria-hidden="true" />
+          </>
+        )
+      }
     </div>
     <div class="hero-text-clip" data-hero-text-clip>
       <div class="hero-text" data-hero-text>

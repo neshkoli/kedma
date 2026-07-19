@@ -4,7 +4,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeHeader from '@/components/HomeHeader.astro';
 import AudioPlayer from '@/components/AudioPlayer.astro';
 import CusdisComments from '@/components/CusdisComments.astro';
-import { episodeUrl, formatHebrewDate, slugParts, type Episode } from '@/lib/episodes';
+import EpisodeDateDuration from '@/components/EpisodeDateDuration.astro';
+import { episodeUrl, slugParts, type Episode } from '@/lib/episodes';
 import { withBase } from '@/lib/paths';
 
 export async function getStaticPaths() {
@@ -32,7 +33,7 @@ interface Props {
 }
 
 const { episode } = Astro.props;
-const { title, date, tags, image, audioUrl, periodName, slug } = episode.data;
+const { title, date, tags, image, audioUrl, periodName, slug, duration } = episode.data;
 const { Content } = await render(episode);
 const pageUrl = new URL(episodeUrl(episode), Astro.site).toString();
 ---
@@ -43,10 +44,8 @@ const pageUrl = new URL(episodeUrl(episode), Astro.site).toString();
   <main class="page-container py-8 pb-24 lg:py-12">
     <article class="mx-auto max-w-3xl">
       <header class="mb-10 space-y-4">
-        <p class="label-marginalia">{formatHebrewDate(date)}</p>
-        <h1 class="font-heading text-headline-lg-mobile font-semibold leading-tight md:text-display-lg md:leading-[56px]">
-          {title}
-        </h1>
+        <EpisodeDateDuration date={date} duration={duration} />
+        <h1 class="section-title">{title}</h1>
 
         <div class="flex flex-wrap gap-2 pt-1">
           {

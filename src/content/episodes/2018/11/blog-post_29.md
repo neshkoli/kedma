@@ -16,6 +16,10 @@ tags:
 image: /images/episodes/2018/11/blog-post_29/RRKp9144066.jpg
 audioUrl: https://audio.kedma.xyz/episodes/2018/11/blog-post_29.m4a
 audioFile: 2- פרק 2 • רב סעדיה גאון.m4a
+duration: '00:36:56'
+spotify: https://podcasters.spotify.com/pod/show/kedma/episodes/2-e2lhi3
+period: 920
+periodName: 'המאה ה-10'
 ---
 
 מעטות המהפכות שאפשר להצביע בהן על אדם אחד שמחולל אותן. רס"ג הוא מהמפכנים הגדולים בעמנו.  
@@ -24,5 +28,5 @@ audioFile: 2- פרק 2 • רב סעדיה גאון.m4a
 על זאת ועוד בפרק השני של קדמא: רב סעדיה גאון - המהפכן השמרן  
   
 
-[![להורדת הפרק למחשב](/images/episodes/2018/11/blog-post_29/RRKp9144066.jpg)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg7y2UuNBdCKWwDkijkYYLiANQbqX3XxrNeecbPtXJMOeTvhZLYCuFmBg4_qv-0yNcAkHctXBD2Q7XaSWUppAtkzL-KBi9BLcN-MUm_C5wRSOc4aVj6tJCxHrV1GfYOtjhydl38FB13ohw/s1600/RRKp9144066.jpg)
+---
   

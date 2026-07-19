@@ -1,5 +1,6 @@
 ---
-import { episodeUrl, episodeSnippet, formatHebrewDate, type Episode } from '@/lib/episodes';
+import EpisodeDateDuration from '@/components/EpisodeDateDuration.astro';
+import { episodeUrl, episodeSnippet, type Episode } from '@/lib/episodes';
 import { withBase } from '@/lib/paths';
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 }
 
 const { episode } = Astro.props;
-const { title, date, image, periodName } = episode.data;
+const { title, date, image, periodName, duration } = episode.data;
 const { text: snippet } = episodeSnippet(episode);
 const url = episodeUrl(episode);
 ---
@@ -30,7 +31,12 @@ const url = episodeUrl(episode);
           <h2 class="mb-3 font-heading text-headline-lg-mobile font-semibold leading-tight text-primary transition-colors duration-300 group-hover:text-aged-gold md:text-headline-lg">
             {title}
           </h2>
-          <p class="mb-3 font-body text-body-md text-on-surface-variant">{formatHebrewDate(date)}</p>
+          <EpisodeDateDuration
+            date={date}
+            duration={duration}
+            class="mb-3"
+            textClass="font-body text-body-md text-on-surface-variant"
+          />
           {periodName && <span class="badge-period">{periodName}</span>}
           {snippet && (
             <p class="mt-4 break-words font-body text-body-lg leading-relaxed text-on-surface-variant">{snippet}</p>
