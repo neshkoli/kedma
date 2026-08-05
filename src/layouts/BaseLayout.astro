@@ -35,7 +35,16 @@ const tamarFontUrl = withBase('fonts/EFT_Tamar.ttf');
   font-display: swap;
 }`}></style>
     <title>{title} | קדמא</title>
-    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="קדמא" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={new URL(withBase(image), Astro.site)} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={new URL(withBase(image), Astro.site)} />}
   </head>
   <body class="min-h-screen">
     <slot />

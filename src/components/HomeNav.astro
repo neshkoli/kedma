@@ -9,7 +9,7 @@ const { current = 'home' } = Astro.props;
 
 const nav = [
   { id: 'home' as const, href: withBase(''), label: 'בית' },
-  { id: 'episodes' as const, href: `${withBase('')}#archive`, label: 'פרקים' },
+  { id: 'episodes' as const, href: withBase('episodes.html'), label: 'פרקים' },
   { id: 'periods' as const, href: withBase('periods.html'), label: 'תקופות' },
 ];
 ---
