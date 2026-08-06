@@ -9,9 +9,9 @@ const nav = [
 ---
 
 <header class="border-b border-ink-blue/20 bg-surface-container-low/80 backdrop-blur-sm">
-  <div class="page-container flex flex-wrap items-center justify-between gap-4 py-4 sm:py-5">
+  <div class="page-container flex flex-wrap items-center justify-between gap-4 py-3 sm:py-4">
     <a href={withBase('')} class="group">
-      <p class="font-heading text-xl font-semibold text-ink-blue transition-colors group-hover:text-aged-gold sm:text-headline-md">
+      <p class="font-body text-xl font-semibold text-ink-blue transition-colors group-hover:text-secondary sm:text-headline-md">
         קדמא
       </p>
       <p class="mt-0.5 hidden font-body text-label-sm text-on-surface-variant sm:block">פודקאסט על היסטוריה יהודית</p>
@@ -20,7 +20,7 @@ const nav = [
       {nav.map((item) => (
         <a
           href={item.href}
-          class="font-body text-label-sm uppercase tracking-widest text-on-surface-variant transition hover:text-ink-blue hover:underline hover:decoration-aged-gold hover:underline-offset-4 sm:text-label-lg"
+          class="font-body text-label-sm font-semibold text-on-surface-variant transition hover:text-secondary hover:underline hover:decoration-aged-gold hover:underline-offset-4 sm:text-label-lg"
         >
           {item.label}
         </a>

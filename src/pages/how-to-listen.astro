@@ -1,0 +1,91 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeHeader from '@/components/HomeHeader.astro';
+import { withBase } from '@/lib/paths';
+
+const podcastLinks = [
+  {
+    href: 'https://open.spotify.com/show/0O2xFIc0bEZViK1M5q43S8',
+    label: 'Spotify',
+    subtitle: 'האזינו בספוטיפיי',
+    icon: withBase('listen/spotify.svg'),
+  },
+  {
+    href: 'https://podcasts.apple.com/us/podcast/%D7%A7%D7%93%D7%9E%D7%90-kedma/id1444337281',
+    label: 'Apple Podcasts',
+    subtitle: 'האזינו באפל פודקאסט',
+    icon: withBase('listen/apple-podcasts.svg'),
+  },
+  {
+    href: 'https://music.youtube.com/playlist?list=PLAMTDdoDg7OOPXKJKUHOQ6kE21sdjEt93',
+    label: 'YouTube Music',
+    subtitle: 'האזינו ביוטיוב מיוזיק',
+    icon: withBase('listen/youtube-music.svg'),
+  },
+  {
+    href: 'http://feeds.feedburner.com/kedma',
+    label: 'RSS',
+    subtitle: 'הרשמה לעדכונים',
+    icon: withBase('listen/rss.svg'),
+  },
+];
+---
+
+<BaseLayout title="כיצד להאזין" description="איך להאזין לפודקאסט קדמא באתר, באפליקציות וב-RSS">
+  <HomeHeader current="listen" pinned />
+
+  <main class="page-container py-8 lg:py-12">
+    <header class="mb-10 border-b border-outline-variant/60 pb-6">
+      <h1 class="section-title">כיצד להאזין</h1>
+    </header>
+
+    <div class="max-w-xl space-y-6 text-right font-body text-body-lg leading-relaxed text-on-surface">
+      <p>אפשר לשמוע את הפודקאסט ישירות מתוך האתר או באפליקצית הפודקאסטים החביבה עליכם.</p>
+      <p>
+        חפשו <strong class="text-ink-blue">קדמא</strong> או <strong class="text-ink-blue">Kedma</strong> באפליקציה
+        <br />
+        או עם הרסס:{' '}
+        <a
+          href="http://feeds.feedburner.com/kedma"
+          class="text-secondary underline decoration-aged-gold underline-offset-4"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          http://feeds.feedburner.com/kedma
+        </a>
+      </p>
+      <p>אפשר גם דרך הקישורים הבאים:</p>
+    </div>
+
+    <div class="me-auto mt-10 flex max-w-md flex-col gap-3">
+      {
+        podcastLinks.map((link) => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="card group flex items-center gap-4 rounded-lg border border-outline-variant/60 bg-surface-container-lowest px-5 py-4 transition hover:border-aged-gold hover:bg-surface-container-low"
+          >
+            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container p-2.5 transition group-hover:bg-surface-container-high">
+              <img src={link.icon} alt="" width="24" height="24" class="h-7 w-7" loading="lazy" />
+            </span>
+            <span class="min-w-0 text-right">
+              <span class="block font-body text-label-lg font-semibold text-ink-blue">{link.label}</span>
+              <span class="block font-body text-label-sm text-on-surface-variant">{link.subtitle}</span>
+            </span>
+            <svg
+              class="ms-auto h-5 w-5 shrink-0 text-on-surface-variant transition group-hover:text-secondary"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </a>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>

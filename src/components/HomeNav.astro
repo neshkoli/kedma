@@ -2,35 +2,48 @@
 import { withBase } from '@/lib/paths';
 
 interface Props {
-  current?: 'home' | 'episodes' | 'periods' | 'search';
+  current?: 'home' | 'episodes' | 'periods' | 'search' | 'listen';
 }
 
 const { current = 'home' } = Astro.props;
 
-const nav = [
-  { id: 'home' as const, href: withBase(''), label: 'בית' },
-  { id: 'episodes' as const, href: withBase('episodes.html'), label: 'פרקים' },
-  { id: 'periods' as const, href: withBase('periods.html'), label: 'תקופות' },
+type NavItem =
+  | { id: NonNullable<Props['current']>; href: string; label: string }
+  | { href: string; label: string; external: true };
+
+const nav: NavItem[] = [
+  { id: 'home', href: withBase(''), label: 'בית' },
+  { id: 'episodes', href: withBase('episodes.html'), label: 'פרקים' },
+  { id: 'periods', href: withBase('periods.html'), label: 'תקופות' },
+  { id: 'listen', href: withBase('how-to-listen.html'), label: 'כיצד להאזין' },
+  { href: 'https://t.me/kedmachat', label: 'טלגרם', external: true },
 ];
 ---
 
 <nav class="border-b border-outline-variant bg-parchment-base/95 backdrop-blur-md">
-  <div class="page-container flex items-center justify-between py-4">
+  <div class="page-container flex items-center justify-between py-3">
     <div class="flex items-center gap-6 sm:gap-8">
       {
-        nav.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'font-body text-label-lg font-semibold transition-colors duration-300',
-              current === item.id
-                ? 'border-b-2 border-aged-gold pb-1 font-bold text-secondary'
-                : 'text-on-surface-variant hover:text-secondary',
-            ]}
-          >
-            {item.label}
-          </a>
-        ))
+        nav.map((item) => {
+          const isExternal = 'external' in item;
+          const isCurrent = !isExternal && current === item.id;
+
+          return (
+            <a
+              href={item.href}
+              target={isExternal ? '_blank' : undefined}
+              rel={isExternal ? 'noopener noreferrer' : undefined}
+              class:list={[
+                'font-body text-label-lg font-semibold transition-colors duration-300',
+                isCurrent
+                  ? 'border-b-2 border-aged-gold pb-1 font-bold text-secondary'
+                  : 'text-on-surface-variant hover:text-secondary',
+              ]}
+            >
+              {item.label}
+            </a>
+          );
+        })
       }
     </div>
     <a

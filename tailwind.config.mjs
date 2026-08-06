@@ -3,6 +3,14 @@ export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
+      /*
+       * Kedma color roles (see design-plan.md):
+       * - aged-gold (#c5a059): decorative — borders, rules, accents on dark surfaces
+       * - secondary (#775a19): interactive text and icons on light (parchment) backgrounds
+       * - ink-blue (#1b263b): primary surfaces, headings, player bar
+       * - surface-container-*: neutral fills for cards, inputs, badges
+       * - secondary-fixed / secondary-container: avoid as large surface fills on light pages
+       */
       colors: {
         surface: {
           DEFAULT: '#fcf9ef',

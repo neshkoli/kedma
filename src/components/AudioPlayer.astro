@@ -18,6 +18,8 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
     הדפדפן שלך לא תומך בנגן אודיו.
   </audio>
 
+  <p class="audio-resume-toast" data-resume-toast hidden>המשך מהמקום שבו הפסקת</p>
+
   <div
     class="audio-seek"
     dir="ltr"
@@ -237,6 +239,19 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
     const positionKey = `kedma:pos:${root.dataset.storageKey ?? audio.currentSrc}`;
     let dragging = false;
     let restored = false;
+    const resumeToast = root.querySelector<HTMLElement>('[data-resume-toast]');
+    let resumeToastTimer: ReturnType<typeof setTimeout> | undefined;
+
+    function showResumeToast() {
+      if (!resumeToast) return;
+      resumeToast.hidden = false;
+      resumeToast.classList.add('is-visible');
+      if (resumeToastTimer) clearTimeout(resumeToastTimer);
+      resumeToastTimer = setTimeout(() => {
+        resumeToast.classList.remove('is-visible');
+        resumeToast.hidden = true;
+      }, 4000);
+    }
 
     function setProgressUi(current: number, total: number) {
       const ratio = total > 0 ? Math.min(Math.max(current / total, 0), 1) : 0;
@@ -372,6 +387,7 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
         // Only resume from a spot worth returning to, and never from the tail end.
         if (Number.isFinite(saved) && saved > 10 && saved < audio.duration - 15) {
           audio.currentTime = saved;
+          showResumeToast();
         }
       }
       setProgressUi(audio.currentTime, audio.duration);

@@ -3,6 +3,16 @@
 @config '../../tailwind.config.mjs';
 
 @layer base {
+  :root {
+    --kedma-background: #fcf9ef;
+    --kedma-foreground: #1c1c16;
+    --kedma-muted: #45474d;
+    --kedma-accent: #775a19;
+    --kedma-border: #c5c6cd;
+    --kedma-surface: #f1eee4;
+    --kedma-primary: #1b263b;
+  }
+
   html {
     @apply scroll-smooth;
   }
@@ -80,7 +90,7 @@
   }
 
   .badge-period {
-    @apply inline-block rounded border border-aged-gold/40 bg-secondary-fixed/30 px-2.5 py-0.5 font-body text-label-sm text-secondary-on-container;
+    @apply inline-block rounded border border-aged-gold/40 bg-aged-gold/10 px-2.5 py-0.5 font-body text-label-sm text-secondary;
   }
 
   .badge-tag {
@@ -115,7 +125,7 @@
   }
 
   .episode-play-btn.is-playing {
-    @apply border-aged-gold/50 bg-secondary-fixed/20;
+    @apply border-aged-gold/50 bg-aged-gold/10;
   }
 
   .episode-play-btn-icon {
@@ -181,7 +191,7 @@
   }
 
   .audio-bar {
-    @apply sticky bottom-0 z-20 bg-ink-blue/95 text-parchment-base backdrop-blur-md;
+    @apply relative sticky bottom-0 z-20 bg-ink-blue/95 text-parchment-base backdrop-blur-md;
     box-shadow: 0 -8px 24px rgba(5, 17, 37, 0.22);
   }
 
@@ -231,6 +241,16 @@
     transition: opacity 160ms ease;
   }
 
+  @media (hover: none) and (pointer: coarse) {
+    .audio-seek-track {
+      height: 5px;
+    }
+
+    .audio-seek-thumb {
+      @apply opacity-100;
+    }
+  }
+
   .audio-seek:hover .audio-seek-thumb,
   .audio-seek:focus-visible .audio-seek-thumb,
   .audio-seek.is-scrubbing .audio-seek-thumb {
@@ -250,7 +270,7 @@
   }
 
   .audio-btn-play {
-    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-aged-gold text-ink-blue transition-colors hover:bg-secondary-fixed-dim sm:h-13 sm:w-13;
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-aged-gold text-ink-blue transition-colors hover:bg-aged-gold/85 sm:h-13 sm:w-13;
   }
 
   .audio-btn-rate {
@@ -302,9 +322,27 @@
     .audio-seek-track,
     .audio-seek-thumb,
     .audio-btn,
-    .audio-btn-play {
+    .audio-btn-play,
+    .audio-resume-toast {
       transition: none;
     }
+  }
+
+  .audio-resume-toast {
+    @apply pointer-events-none absolute inset-x-0 bottom-full mx-auto mb-2 w-fit max-w-[calc(100%-2rem)] rounded-full border border-aged-gold/40 bg-ink-blue px-4 py-2 font-body text-label-sm text-parchment-base opacity-0 shadow-lg;
+    transform: translateY(0.5rem);
+    transition:
+      opacity 240ms ease,
+      transform 240ms ease;
+  }
+
+  .audio-resume-toast.is-visible {
+    @apply opacity-100;
+    transform: translateY(0);
+  }
+
+  .cusdis-wrap {
+    @apply rounded border border-outline-variant/60 bg-surface-container-low/40 p-4;
   }
 
   .episode-list-item {
