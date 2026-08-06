@@ -1,25 +1,27 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import { remarkYoutubeEmbed } from './src/plugins/remark-youtube-embed.mjs';
 
 const base = process.env.ASTRO_BASE ?? '/';
+const site = process.env.ASTRO_SITE ?? 'https://neshkoli.github.io';
 
 export default defineConfig({
-  site: 'https://www.kedma.xyz',
+  site,
   base,
   output: 'static',
   build: {
     format: 'file',
   },
   markdown: {
-    remarkPlugins: [remarkYoutubeEmbed],
-  },
-  integrations: [
-    mdx(),
-    tailwind({
-      applyBaseStyles: false,
+    processor: unified({
+      remarkPlugins: [[remarkYoutubeEmbed, { base }]],
     }),
-  ],
+  },
+  integrations: [mdx()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

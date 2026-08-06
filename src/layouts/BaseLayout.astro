@@ -9,7 +9,8 @@ interface Props {
 }
 
 const { title, description = 'קדמא - פודקאסט על היסטוריה יהודית עם נעם אשכולי', image } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const canonical = new URL(Astro.url.pathname, Astro.url.origin);
+const absoluteUrl = (path: string) => new URL(path, Astro.url.origin).toString();
 const tamarFontUrl = withBase('fonts/EFT_Tamar.ttf');
 ---
 
@@ -35,16 +36,18 @@ const tamarFontUrl = withBase('fonts/EFT_Tamar.ttf');
   font-display: swap;
 }`}></style>
     <title>{title} | קדמא</title>
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="he_IL" />
     <meta property="og:site_name" content="קדמא" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    {image && <meta property="og:image" content={new URL(withBase(image), Astro.site)} />}
+    {image && <meta property="og:image" content={absoluteUrl(withBase(image))} />}
+    {image && <meta property="og:image:alt" content={title} />}
     <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    {image && <meta name="twitter:image" content={new URL(withBase(image), Astro.site)} />}
+    {image && <meta name="twitter:image" content={absoluteUrl(withBase(image))} />}
   </head>
   <body class="min-h-screen">
     <slot />

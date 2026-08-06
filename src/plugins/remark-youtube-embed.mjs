@@ -27,8 +27,16 @@ function youtubeIframe(videoId) {
 }
 
 /** @returns {import('unified').Plugin} */
-export function remarkYoutubeEmbed() {
+export function remarkYoutubeEmbed(options = {}) {
+  const basePrefix = (options.base ?? '/').replace(/\/$/, '');
+
   return (tree) => {
+    visit(tree, 'image', (node) => {
+      if (node.url?.startsWith('/')) {
+        node.url = `${basePrefix}${node.url}`;
+      }
+    });
+
     visit(tree, 'link', (node, index, parent) => {
       if (!parent || index == null) return;
       if (node.children?.length !== 1 || node.children[0].type !== 'image') return;

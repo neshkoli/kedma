@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@config '../../tailwind.config.mjs';
 
 @layer base {
   html {
@@ -46,7 +46,7 @@
   }
 
   .card-featured {
-    @apply card border-t-2 border-t-aged-gold border-slate-gray/40;
+    @apply rounded border border-slate-gray/40 bg-surface-container-low/60 border-t-2 border-t-aged-gold;
   }
 
   .card-book {
@@ -122,11 +122,11 @@
   }
 
   .episode-list-item {
-    @apply flex gap-4 py-4 divider-fine last:border-b-0;
+    @apply flex gap-4 py-4 border-b border-outline-variant/60 last:border-b-0;
   }
 
   .episode-list-marginalia {
-    @apply w-16 shrink-0 pt-0.5 text-start label-marginalia;
+    @apply w-16 shrink-0 pt-0.5 text-start font-body text-label-sm uppercase tracking-[0.12em] text-on-surface-variant;
   }
 
   .periods-table-row {

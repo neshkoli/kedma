@@ -19,14 +19,12 @@ audioFile: 2- פרק 2 • רב סעדיה גאון.m4a
 duration: '00:36:56'
 spotify: https://podcasters.spotify.com/pod/show/kedma/episodes/2-e2lhi3
 period: 920
-periodName: 'המאה ה-10'
+periodName: המאה ה-10
 ---
 
 מעטות המהפכות שאפשר להצביע בהן על אדם אחד שמחולל אותן. רס"ג הוא מהמפכנים הגדולים בעמנו.  
 
 על הקראים, על לוח שנה שונה ליהודים במקומות שונים בעולם, על מאבקים, על ספרים.  
 על זאת ועוד בפרק השני של קדמא: רב סעדיה גאון - המהפכן השמרן  
-  
 
----
-  
+[להורדת הפרק למחשב](https://1drv.ms/u/s!AhnqDJDnCwwL6U9MOJmkn5tEEsqZ)
