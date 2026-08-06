@@ -4,6 +4,7 @@ import { formatEpisodeDuration, formatHebrewDate } from '@/lib/episodes';
 interface Props {
   date: Date;
   duration?: string;
+  showDuration?: boolean;
   textClass?: string;
   class?: string;
 }
@@ -11,12 +12,13 @@ interface Props {
 const {
   date,
   duration,
+  showDuration = true,
   textClass = 'label-marginalia',
   class: className,
 } = Astro.props;
 ---
 
-<div class:list={['flex items-center justify-between gap-3', className]}>
+<div class:list={['flex items-center gap-3', className]}>
   <span class={textClass}>{formatHebrewDate(date)}</span>
-  {duration && <span class={textClass}>{formatEpisodeDuration(duration)}</span>}
+  {showDuration && duration && <span class={textClass}>{formatEpisodeDuration(duration)}</span>}
 </div>

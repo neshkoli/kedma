@@ -1,0 +1,71 @@
+---
+import { formatEpisodeDuration } from '@/lib/episodes';
+
+interface Props {
+  duration?: string;
+}
+
+const { duration } = Astro.props;
+const durationLabel = duration ? formatEpisodeDuration(duration) : null;
+---
+
+<button
+  type="button"
+  class="episode-play-btn"
+  data-episode-play
+  aria-label="נגן פרק"
+>
+  <span class="episode-play-btn-icon" aria-hidden="true">
+    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" data-episode-play-icon>
+      <path d="M8 5.5v13l11-6.5z"></path>
+    </svg>
+    <svg class="hidden h-5 w-5" viewBox="0 0 24 24" fill="currentColor" data-episode-pause-icon>
+      <rect x="7" y="5.5" width="3.5" height="13" rx="1"></rect>
+      <rect x="13.5" y="5.5" width="3.5" height="13" rx="1"></rect>
+    </svg>
+  </span>
+  <span data-episode-play-label>נגן פרק</span>
+  {
+    durationLabel && (
+      <span class="episode-play-btn-duration" dir="ltr">
+        {durationLabel}
+      </span>
+    )
+  }
+</button>
+
+<script>
+  function initEpisodePlayButton() {
+    const button = document.querySelector<HTMLButtonElement>('[data-episode-play]');
+    const audio = document.getElementById('episode-audio') as HTMLAudioElement | null;
+    if (!button || !audio || button.dataset.playInit) return;
+
+    button.dataset.playInit = 'true';
+
+    const playIcon = button.querySelector('[data-episode-play-icon]');
+    const pauseIcon = button.querySelector('[data-episode-pause-icon]');
+    const label = button.querySelector('[data-episode-play-label]');
+
+    function sync() {
+      const playing = !audio!.paused && !audio!.ended;
+      playIcon?.classList.toggle('hidden', playing);
+      pauseIcon?.classList.toggle('hidden', !playing);
+      label!.textContent = playing ? 'השהה' : 'נגן פרק';
+      button!.setAttribute('aria-label', playing ? 'השהה' : 'נגן פרק');
+      button!.classList.toggle('is-playing', playing);
+    }
+
+    button.addEventListener('click', () => {
+      if (audio.paused) void audio.play();
+      else audio.pause();
+    });
+
+    audio.addEventListener('play', sync);
+    audio.addEventListener('pause', sync);
+    audio.addEventListener('ended', sync);
+    sync();
+  }
+
+  initEpisodePlayButton();
+  document.addEventListener('astro:page-load', initEpisodePlayButton);
+</script>

@@ -5,6 +5,7 @@ import HomeHeader from '@/components/HomeHeader.astro';
 import AudioPlayer from '@/components/AudioPlayer.astro';
 import CusdisComments from '@/components/CusdisComments.astro';
 import EpisodeDateDuration from '@/components/EpisodeDateDuration.astro';
+import EpisodePlayButton from '@/components/EpisodePlayButton.astro';
 import { episodeUrl, episodeSnippet, slugParts, type Episode } from '@/lib/episodes';
 import { withBase } from '@/lib/paths';
 
@@ -38,18 +39,21 @@ const { Content } = await render(episode);
 const pageUrl = new URL(episodeUrl(episode), Astro.site).toString();
 const { text: snippet } = episodeSnippet(episode, 300);
 const description = snippet || `${title} - פודקאסט קדמא`;
+const heroAlt = imageCaption ? '' : title;
 ---
 
 <BaseLayout title={title} description={description} image={image}>
   <HomeHeader current="episodes" pinned />
 
-  <main class="page-container py-8 pb-24 lg:py-12">
-    <article class="mx-auto max-w-3xl">
-      <header class="mb-10 space-y-4">
-        <EpisodeDateDuration date={date} duration={duration} />
-        <h1 class="section-title">{title}</h1>
+  <main class="page-container py-8 pb-28 lg:py-12">
+    <article>
+      <header class="mb-5 space-y-3">
+        <EpisodeDateDuration date={date} showDuration={false} />
+        <h1 class="episode-title">{title}</h1>
 
-        <div class="flex flex-wrap gap-2 pt-1">
+        {audioUrl && <EpisodePlayButton duration={duration} />}
+
+        <div class="flex flex-wrap gap-2">
           {
             periodName && (
               <a href={withBase('periods.html')} class="badge-period">
@@ -65,32 +69,34 @@ const description = snippet || `${title} - פודקאסט קדמא`;
             ))
           }
         </div>
+      </header>
 
+      <section class="episode-body">
         {
           image && (
-            <figure class="mt-6">
+            <figure class="episode-hero-figure">
               <img
                 src={withBase(image)}
-                alt={imageCaption ?? ''}
-                class="w-full rounded border border-outline-variant/40 object-cover"
+                alt={heroAlt}
+                class="episode-hero-image"
               />
               {imageCaption && (
-                <figcaption class="mt-2 text-center text-sm text-on-surface-variant">
+                <figcaption class="episode-hero-caption">
                   {imageCaption}
                 </figcaption>
               )}
             </figure>
           )
         }
-      </header>
 
-      <div class="prose-kedma">
-        <Content />
-      </div>
+        <div class="prose-kedma">
+          <Content />
+        </div>
+      </section>
 
       <CusdisComments pageId={slug} pageUrl={pageUrl} pageTitle={title} />
     </article>
   </main>
 
-  {audioUrl && <AudioPlayer src={audioUrl} title={title} />}
+  {audioUrl && <AudioPlayer src={audioUrl} title={title} duration={duration} />}
 </BaseLayout>

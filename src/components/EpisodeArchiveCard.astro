@@ -32,7 +32,7 @@ const url = episodeUrl(episode);
         <EpisodeDateDuration
           date={date}
           duration={duration}
-          textClass="font-body text-label-sm font-bold text-aged-gold"
+          textClass="font-body text-label-sm font-bold text-secondary"
         />
         {periodName && (
           <span class="mt-2 inline-block rounded bg-surface-container-high px-2 py-0.5 font-body text-[10px] font-bold text-outline">
@@ -40,11 +40,11 @@ const url = episodeUrl(episode);
           </span>
         )}
       </div>
-      <h3 class="mb-3 font-heading text-headline-md font-medium transition-colors duration-300 group-hover:text-aged-gold">
+      <h3 class="card-title mb-3 transition-colors duration-300 group-hover:text-secondary">
         {title}
       </h3>
       {snippet && (
-        <p class="mb-5 break-words font-body text-body-md leading-relaxed text-on-surface-variant">{snippet}</p>
+        <p class="mb-5 break-words font-body text-body-md leading-[1.67] text-on-surface-variant">{snippet}</p>
       )}
       <div class="flex flex-wrap items-center justify-between gap-3">
         {
@@ -58,7 +58,7 @@ const url = episodeUrl(episode);
         }
         {
           truncated && (
-            <span class="inline-flex items-center gap-1 font-body text-label-lg font-bold text-ink-blue transition-colors group-hover:text-aged-gold">
+            <span class="inline-flex items-center gap-1 font-body text-label-lg font-bold text-ink-blue transition-colors group-hover:text-secondary">
               קרא עוד
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M15 18l-6-6 6-6"></path>

@@ -22,6 +22,16 @@
   h4 {
     @apply font-heading text-ink-blue;
   }
+
+  h1.episode-title,
+  h2.episode-title {
+    @apply font-body;
+  }
+
+  h1.section-title,
+  h2.section-title {
+    @apply font-body;
+  }
 }
 
 @layer components {
@@ -30,15 +40,15 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded bg-ink-blue px-5 py-2.5 font-body text-label-lg uppercase tracking-widest text-parchment-base transition-colors hover:bg-primary-container;
+    @apply inline-flex items-center justify-center rounded bg-ink-blue px-5 py-2.5 font-body text-label-lg font-semibold text-parchment-base transition-colors hover:bg-primary-container;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded border border-aged-gold bg-transparent px-5 py-2.5 font-body text-label-lg uppercase tracking-widest text-ink-blue transition-colors hover:bg-aged-gold/10;
+    @apply inline-flex items-center justify-center rounded border border-aged-gold bg-transparent px-5 py-2.5 font-body text-label-lg font-semibold text-ink-blue transition-colors hover:bg-aged-gold/10;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center font-body text-label-lg uppercase tracking-widest text-ink-blue underline-offset-4 transition hover:underline hover:decoration-aged-gold;
+    @apply inline-flex items-center justify-center font-body text-label-lg font-semibold text-ink-blue underline-offset-4 transition hover:underline hover:decoration-aged-gold;
   }
 
   .card {
@@ -62,7 +72,7 @@
   }
 
   .label-marginalia {
-    @apply font-body text-label-sm uppercase tracking-[0.12em] text-on-surface-variant;
+    @apply font-body text-label-sm text-on-surface-variant;
   }
 
   .divider-fine {
@@ -70,7 +80,7 @@
   }
 
   .badge-period {
-    @apply inline-block rounded border border-aged-gold/40 bg-secondary-fixed/30 px-2.5 py-0.5 font-body text-label-sm uppercase tracking-wider text-secondary-on-container;
+    @apply inline-block rounded border border-aged-gold/40 bg-secondary-fixed/30 px-2.5 py-0.5 font-body text-label-sm text-secondary-on-container;
   }
 
   .badge-tag {
@@ -78,11 +88,51 @@
   }
 
   .section-title {
-    @apply font-heading text-headline-lg-mobile md:text-headline-lg;
+    @apply font-body text-headline-lg-mobile font-semibold text-ink-blue md:text-headline-lg;
+  }
+
+  .card-title-lg {
+    @apply font-body text-headline-lg-mobile font-semibold leading-tight text-ink-blue md:text-headline-lg;
+  }
+
+  .card-title {
+    @apply font-body text-headline-md font-medium leading-snug text-ink-blue;
+  }
+
+  .episode-title {
+    @apply font-body text-episode-title-mobile font-semibold text-ink-blue md:text-episode-title;
+  }
+
+  .episode-play-btn {
+    @apply inline-flex items-center gap-2.5 rounded-full border border-ink-blue/20 bg-surface-container-low px-4 py-2 font-body text-label-lg font-semibold text-ink-blue transition-colors hover:border-ink-blue/35 hover:bg-surface-container;
+  }
+
+  .episode-play-btn:focus-visible {
+    @apply outline-none;
+    box-shadow:
+      0 0 0 2px #fcf9ef,
+      0 0 0 4px #1b263b;
+  }
+
+  .episode-play-btn.is-playing {
+    @apply border-aged-gold/50 bg-secondary-fixed/20;
+  }
+
+  .episode-play-btn-icon {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink-blue text-parchment-base;
+  }
+
+  .episode-play-btn.is-playing .episode-play-btn-icon {
+    @apply bg-secondary text-parchment-base;
+  }
+
+  .episode-play-btn-duration {
+    @apply font-body text-label-sm text-on-surface-variant;
+    font-variant-numeric: tabular-nums;
   }
 
   .prose-kedma {
-    @apply prose prose-lg max-w-none font-body text-body-lg text-on-surface prose-headings:font-heading prose-headings:text-ink-blue prose-headings:font-semibold prose-a:text-secondary prose-a:no-underline prose-a:decoration-aged-gold hover:prose-a:underline prose-strong:text-ink-blue prose-blockquote:border-aged-gold prose-blockquote:text-on-surface-variant prose-hr:border-outline-variant;
+    @apply prose prose-lg max-w-none font-body text-body-lg leading-[1.67] text-on-surface prose-headings:font-heading prose-headings:text-ink-blue prose-headings:font-semibold prose-a:text-secondary prose-a:no-underline prose-a:decoration-aged-gold hover:prose-a:underline prose-strong:text-ink-blue prose-blockquote:border-aged-gold prose-blockquote:text-on-surface-variant prose-hr:border-outline-variant;
   }
 
   .prose-kedma iframe {
@@ -108,17 +158,153 @@
     @apply mx-auto rounded border border-outline-variant/40;
   }
 
+  .prose-kedma img,
+  .prose-kedma .kedma-media,
+  .prose-kedma iframe {
+    clear: both;
+  }
+
+  .episode-body {
+    @apply flow-root;
+  }
+
+  .episode-hero-figure {
+    @apply float-end mb-4 ms-6 mt-1 w-1/2;
+  }
+
+  .episode-hero-image {
+    @apply aspect-square w-full rounded border border-outline-variant/40 object-cover;
+  }
+
+  .episode-hero-caption {
+    @apply mt-1.5 text-center text-xs text-on-surface-variant md:text-start;
+  }
+
   .audio-bar {
-    @apply sticky bottom-0 z-20 border-t border-ink-blue bg-parchment-base/95 backdrop-blur-sm;
+    @apply sticky bottom-0 z-20 bg-ink-blue/95 text-parchment-base backdrop-blur-md;
+    box-shadow: 0 -8px 24px rgba(5, 17, 37, 0.22);
   }
 
-  .audio-bar audio {
-    @apply w-full;
-    accent-color: #c5a059;
+  /* The seek rail doubles as the bar's top hairline: it fills with gold as the
+     episode plays. Visually 3px, but 14px of pointer target. */
+  .audio-seek {
+    @apply relative block w-full cursor-pointer touch-none select-none;
+    height: 14px;
   }
 
-  .audio-bar audio::-webkit-media-controls-panel {
-    background-color: #f5f2e8;
+  .audio-seek:focus-visible {
+    @apply outline-none;
+    outline: 2px solid #c5a059;
+    outline-offset: 1px;
+  }
+
+  .audio-seek-track {
+    @apply pointer-events-none absolute inset-x-0 top-0 overflow-hidden;
+    height: 3px;
+    background-color: rgba(197, 160, 89, 0.22);
+    transition: height 160ms ease;
+  }
+
+  .audio-seek:hover .audio-seek-track,
+  .audio-seek:focus-visible .audio-seek-track,
+  .audio-seek.is-scrubbing .audio-seek-track {
+    height: 6px;
+  }
+
+  .audio-seek-buffered,
+  .audio-seek-played {
+    @apply absolute inset-y-0 left-0;
+    width: 0;
+  }
+
+  .audio-seek-buffered {
+    background-color: rgba(245, 242, 232, 0.16);
+  }
+
+  .audio-seek-played {
+    @apply bg-aged-gold;
+  }
+
+  .audio-seek-thumb {
+    @apply pointer-events-none absolute top-0 left-0 h-3 w-3 rounded-full bg-aged-gold opacity-0;
+    transform: translate(-50%, -25%);
+    transition: opacity 160ms ease;
+  }
+
+  .audio-seek:hover .audio-seek-thumb,
+  .audio-seek:focus-visible .audio-seek-thumb,
+  .audio-seek.is-scrubbing .audio-seek-thumb {
+    @apply opacity-100;
+  }
+
+  .audio-btn {
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-parchment-base/75 transition-colors hover:bg-parchment-base/10 hover:text-parchment-base;
+  }
+
+  .audio-btn-skip {
+    @apply h-12 w-12;
+  }
+
+  .audio-btn-skip svg {
+    @apply h-6 w-6;
+  }
+
+  .audio-btn-play {
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-aged-gold text-ink-blue transition-colors hover:bg-secondary-fixed-dim sm:h-13 sm:w-13;
+  }
+
+  .audio-btn-rate {
+    @apply w-auto px-2.5 font-body text-label-sm font-semibold;
+    min-width: 2.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .audio-btn:focus-visible,
+  .audio-btn-play:focus-visible,
+  .audio-volume-slider:focus-visible {
+    @apply outline-none;
+    box-shadow:
+      0 0 0 2px #1b263b,
+      0 0 0 4px #c5a059;
+  }
+
+  .audio-time {
+    @apply shrink-0 whitespace-nowrap font-body text-label-sm tracking-normal text-parchment-base/70;
+    font-variant-numeric: tabular-nums;
+    unicode-bidi: isolate;
+  }
+
+  .audio-time-total {
+    @apply hidden min-[380px]:inline;
+  }
+
+  .audio-time-sep {
+    @apply text-parchment-base/40;
+  }
+
+  .audio-volume {
+    @apply hidden items-center gap-1 md:flex;
+  }
+
+  .audio-volume-slider {
+    @apply h-1 w-16 cursor-pointer appearance-none rounded-full bg-parchment-base/25;
+  }
+
+  .audio-volume-slider::-webkit-slider-thumb {
+    @apply h-3 w-3 appearance-none rounded-full bg-aged-gold;
+  }
+
+  .audio-volume-slider::-moz-range-thumb {
+    @apply h-3 w-3 rounded-full border-0 bg-aged-gold;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .audio-seek-track,
+    .audio-seek-thumb,
+    .audio-btn,
+    .audio-btn-play {
+      transition: none;
+    }
   }
 
   .episode-list-item {
@@ -126,7 +312,7 @@
   }
 
   .episode-list-marginalia {
-    @apply w-16 shrink-0 pt-0.5 text-start font-body text-label-sm uppercase tracking-[0.12em] text-on-surface-variant;
+    @apply w-16 shrink-0 pt-0.5 text-start font-body text-label-sm text-on-surface-variant;
   }
 
   .periods-table-row {

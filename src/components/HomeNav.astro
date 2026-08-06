@@ -22,10 +22,10 @@ const nav = [
           <a
             href={item.href}
             class:list={[
-              'font-body text-label-lg uppercase tracking-widest transition-colors duration-300',
+              'font-body text-label-lg font-semibold transition-colors duration-300',
               current === item.id
-                ? 'border-b-2 border-aged-gold pb-1 font-bold text-aged-gold'
-                : 'text-on-surface-variant hover:text-aged-gold',
+                ? 'border-b-2 border-aged-gold pb-1 font-bold text-secondary'
+                : 'text-on-surface-variant hover:text-secondary',
             ]}
           >
             {item.label}

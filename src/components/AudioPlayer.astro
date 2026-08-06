@@ -1,34 +1,165 @@
 ---
+import { formatEpisodeDuration } from '@/lib/episodes';
+
 interface Props {
   src: string;
   title: string;
+  /** RSS duration (HH:MM:SS), shown before metadata loads to avoid a layout shift. */
+  duration?: string;
 }
 
-const { src, title } = Astro.props;
+const { src, title, duration } = Astro.props;
 const filename = src.split('/').pop() ?? 'episode';
+const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
 ---
 
-<div class="audio-bar">
-  <div class="page-container flex items-center gap-3 py-2">
-    <audio
-      id="episode-audio"
-      controls
-      preload="metadata"
-      src={src}
-      title={title}
-      class="min-w-0 flex-1"
+<div class="audio-bar" data-audio-player data-storage-key={src}>
+  <audio id="episode-audio" preload="metadata" src={src} title={title}>
+    הדפדפן שלך לא תומך בנגן אודיו.
+  </audio>
+
+  <div
+    class="audio-seek"
+    dir="ltr"
+    role="slider"
+    tabindex="0"
+    aria-label="מיקום בפרק"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+    aria-valuetext="0:00"
+    data-seek
+  >
+    <div class="audio-seek-track">
+      <div class="audio-seek-buffered" data-buffered></div>
+      <div class="audio-seek-played" data-played></div>
+    </div>
+    <div class="audio-seek-thumb" data-thumb></div>
+  </div>
+
+  <div class="page-container flex items-center gap-1 py-2.5 sm:gap-2">
+    <button type="button" class="audio-btn-play" data-toggle aria-label="נגן">
+      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon-play>
+        <path d="M8 5.5v13l11-6.5z"></path>
+      </svg>
+      <svg
+        class="hidden h-6 w-6"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+        data-icon-pause
+      >
+        <rect x="7" y="5.5" width="3.5" height="13" rx="1"></rect>
+        <rect x="13.5" y="5.5" width="3.5" height="13" rx="1"></rect>
+      </svg>
+    </button>
+
+    <button type="button" class="audio-btn audio-btn-skip" data-skip="-15" aria-label="אחורה 15 שניות">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M11.5 5.5a7.5 7.5 0 1 1-7.36 9" stroke-linecap="round"></path>
+        <path d="M8.4 2.6 4.1 5.7l3.1 3.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <text
+          x="12.5"
+          y="17.4"
+          text-anchor="middle"
+          font-size="7.5"
+          font-weight="600"
+          fill="currentColor"
+          stroke="none">15</text
+        >
+      </svg>
+    </button>
+
+    <button type="button" class="audio-btn audio-btn-skip" data-skip="15" aria-label="קדימה 15 שניות">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M12.5 5.5a7.5 7.5 0 1 0 7.36 9" stroke-linecap="round"></path>
+        <path d="M15.6 2.6 19.9 5.7l-3.1 3.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <text
+          x="11.5"
+          y="17.4"
+          text-anchor="middle"
+          font-size="7.5"
+          font-weight="600"
+          fill="currentColor"
+          stroke="none">15</text
+        >
+      </svg>
+    </button>
+
+    <p class="audio-time" dir="ltr">
+      <span data-elapsed>0:00</span>
+      <span class="audio-time-total"
+        ><span class="audio-time-sep">/</span> <span data-total>{initialTotal}</span></span
+      >
+    </p>
+
+    <div class="flex-1"></div>
+
+    <button
+      type="button"
+      class="audio-btn audio-btn-rate"
+      data-rate
+      aria-label="מהירות ניגון"
+      title="מהירות ניגון"
     >
-      הדפדפן שלך לא תומך בנגן אודיו.
-    </audio>
+      <span dir="ltr" data-rate-label>1&#215;</span>
+    </button>
+
+    <div class="audio-volume">
+      <button type="button" class="audio-btn" data-mute aria-label="השתקה">
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          data-icon-sound
+        >
+          <path d="M11 5 6.5 9H3.5v6h3L11 19z"></path>
+          <path d="M15 9.5a3.5 3.5 0 0 1 0 5"></path>
+          <path d="M17.8 7a7 7 0 0 1 0 10"></path>
+        </svg>
+        <svg
+          class="hidden h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          data-icon-muted
+        >
+          <path d="M11 5 6.5 9H3.5v6h3L11 19z"></path>
+          <path d="m15.5 10 5 5"></path>
+          <path d="m20.5 10-5 5"></path>
+        </svg>
+      </button>
+      <input
+        type="range"
+        class="audio-volume-slider"
+        dir="ltr"
+        min="0"
+        max="1"
+        step="0.05"
+        value="1"
+        aria-label="עוצמת שמע"
+        data-volume
+      />
+    </div>
+
     <a
       href={src}
       download={filename}
-      class="shrink-0 rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
+      class="audio-btn"
       data-download-link
       aria-label="הורדה"
       title="הורדה"
     >
-      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 3v12"></path>
         <path d="M7 10l5 5 5-5"></path>
         <path d="M5 21h14"></path>
@@ -38,22 +169,255 @@ const filename = src.split('/').pop() ?? 'episode';
 </div>
 
 <script>
-  const audio = document.getElementById('episode-audio') as HTMLAudioElement | null;
-  const downloadLink = document.querySelector('[data-download-link]');
+  const RATES = [1, 1.25, 1.5, 1.75, 2];
+  const RATE_KEY = 'kedma:rate';
+  const SKIP_KEY_STEP = 5;
 
-  if (audio) {
-    audio.addEventListener('play', () => {
-      window.dispatchEvent(new CustomEvent('kedma:audio_play'));
-    });
-    audio.addEventListener('pause', () => {
-      window.dispatchEvent(new CustomEvent('kedma:audio_pause'));
-    });
-    audio.addEventListener('ended', () => {
-      window.dispatchEvent(new CustomEvent('kedma:audio_complete'));
-    });
+  function readStore(key: string): string | null {
+    try {
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
   }
 
-  downloadLink?.addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('kedma:file_download'));
-  });
+  function writeStore(key: string, value: string) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch {
+      /* storage unavailable (private mode, quota) — resume is best-effort */
+    }
+  }
+
+  function clearStore(key: string) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      /* see writeStore */
+    }
+  }
+
+  function formatTime(seconds: number): string {
+    if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+    const total = Math.floor(seconds);
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const secs = total % 60;
+    const pad = (value: number) => String(value).padStart(2, '0');
+    return hours > 0 ? `${hours}:${pad(minutes)}:${pad(secs)}` : `${minutes}:${pad(secs)}`;
+  }
+
+  function initAudioPlayer() {
+    const root = document.querySelector<HTMLElement>('[data-audio-player]');
+    if (!root || root.dataset.audioInit) return;
+
+    const audio = root.querySelector<HTMLAudioElement>('audio');
+    const seek = root.querySelector<HTMLElement>('[data-seek]');
+    const played = root.querySelector<HTMLElement>('[data-played]');
+    const buffered = root.querySelector<HTMLElement>('[data-buffered]');
+    const thumb = root.querySelector<HTMLElement>('[data-thumb]');
+    const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]');
+    const iconPlay = root.querySelector<HTMLElement>('[data-icon-play]');
+    const iconPause = root.querySelector<HTMLElement>('[data-icon-pause]');
+    const elapsedLabel = root.querySelector<HTMLElement>('[data-elapsed]');
+    const totalLabel = root.querySelector<HTMLElement>('[data-total]');
+    const rateButton = root.querySelector<HTMLButtonElement>('[data-rate]');
+    const rateLabel = root.querySelector<HTMLElement>('[data-rate-label]');
+    const muteButton = root.querySelector<HTMLButtonElement>('[data-mute]');
+    const iconSound = root.querySelector<HTMLElement>('[data-icon-sound]');
+    const iconMuted = root.querySelector<HTMLElement>('[data-icon-muted]');
+    const volume = root.querySelector<HTMLInputElement>('[data-volume]');
+    const downloadLink = root.querySelector<HTMLElement>('[data-download-link]');
+
+    if (!audio || !seek || !played || !buffered || !thumb || !toggle) return;
+    if (!iconPlay || !iconPause || !elapsedLabel || !totalLabel) return;
+
+    root.dataset.audioInit = 'true';
+
+    const positionKey = `kedma:pos:${root.dataset.storageKey ?? audio.currentSrc}`;
+    let dragging = false;
+    let restored = false;
+
+    function setProgressUi(current: number, total: number) {
+      const ratio = total > 0 ? Math.min(Math.max(current / total, 0), 1) : 0;
+      const percent = `${(ratio * 100).toFixed(3)}%`;
+      played!.style.width = percent;
+      thumb!.style.left = percent;
+      elapsedLabel!.textContent = formatTime(current);
+      seek!.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+      seek!.setAttribute(
+        'aria-valuetext',
+        total > 0 ? `${formatTime(current)} מתוך ${formatTime(total)}` : formatTime(current),
+      );
+    }
+
+    function seekToClientX(clientX: number) {
+      const rect = seek!.getBoundingClientRect();
+      if (rect.width <= 0 || !Number.isFinite(audio!.duration)) return;
+      const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+      audio!.currentTime = ratio * audio!.duration;
+      setProgressUi(audio!.currentTime, audio!.duration);
+    }
+
+    function nudge(delta: number) {
+      if (!Number.isFinite(audio!.duration)) return;
+      audio!.currentTime = Math.min(Math.max(audio!.currentTime + delta, 0), audio!.duration);
+      setProgressUi(audio!.currentTime, audio!.duration);
+    }
+
+    function applyRate(rate: number) {
+      audio!.playbackRate = rate;
+      if (rateLabel) rateLabel.textContent = `${rate}\u00d7`;
+      rateButton?.setAttribute('aria-label', `מהירות ניגון: ${rate} — לחצו להחלפה`);
+    }
+
+    function syncMuteUi() {
+      const silent = audio!.muted || audio!.volume === 0;
+      iconSound?.classList.toggle('hidden', silent);
+      iconMuted?.classList.toggle('hidden', !silent);
+      muteButton?.setAttribute('aria-label', silent ? 'ביטול השתקה' : 'השתקה');
+    }
+
+    // --- transport ---
+
+    toggle.addEventListener('click', () => {
+      if (audio.paused) void audio.play();
+      else audio.pause();
+    });
+
+    root.querySelectorAll<HTMLButtonElement>('[data-skip]').forEach((button) => {
+      button.addEventListener('click', () => nudge(Number(button.dataset.skip)));
+    });
+
+    rateButton?.addEventListener('click', () => {
+      const next = RATES[(RATES.indexOf(audio.playbackRate) + 1) % RATES.length] ?? 1;
+      applyRate(next);
+      writeStore(RATE_KEY, String(next));
+    });
+
+    muteButton?.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      if (!audio.muted && audio.volume === 0) audio.volume = 1;
+      syncMuteUi();
+      if (volume) volume.value = String(audio.muted ? 0 : audio.volume);
+    });
+
+    volume?.addEventListener('input', () => {
+      audio.volume = Number(volume.value);
+      audio.muted = audio.volume === 0;
+      syncMuteUi();
+    });
+
+    // --- seeking ---
+
+    seek.addEventListener('pointerdown', (event) => {
+      dragging = true;
+      seek.setPointerCapture(event.pointerId);
+      seek.classList.add('is-scrubbing');
+      seekToClientX(event.clientX);
+    });
+
+    seek.addEventListener('pointermove', (event) => {
+      if (dragging) seekToClientX(event.clientX);
+    });
+
+    const endDrag = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      seek.classList.remove('is-scrubbing');
+      if (seek.hasPointerCapture(event.pointerId)) seek.releasePointerCapture(event.pointerId);
+    };
+
+    seek.addEventListener('pointerup', endDrag);
+    seek.addEventListener('pointercancel', endDrag);
+
+    seek.addEventListener('keydown', (event) => {
+      switch (event.key) {
+        case 'ArrowRight':
+          nudge(SKIP_KEY_STEP);
+          break;
+        case 'ArrowLeft':
+          nudge(-SKIP_KEY_STEP);
+          break;
+        case 'PageUp':
+          nudge(30);
+          break;
+        case 'PageDown':
+          nudge(-30);
+          break;
+        case 'Home':
+          audio.currentTime = 0;
+          break;
+        case 'End':
+          if (Number.isFinite(audio.duration)) audio.currentTime = audio.duration;
+          break;
+        case ' ':
+        case 'Enter':
+          if (audio.paused) void audio.play();
+          else audio.pause();
+          break;
+        default:
+          return;
+      }
+      event.preventDefault();
+    });
+
+    // --- audio element state ---
+
+    audio.addEventListener('loadedmetadata', () => {
+      totalLabel.textContent = formatTime(audio.duration);
+      if (!restored) {
+        restored = true;
+        const saved = Number(readStore(positionKey));
+        // Only resume from a spot worth returning to, and never from the tail end.
+        if (Number.isFinite(saved) && saved > 10 && saved < audio.duration - 15) {
+          audio.currentTime = saved;
+        }
+      }
+      setProgressUi(audio.currentTime, audio.duration);
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (!dragging) setProgressUi(audio.currentTime, audio.duration);
+      if (audio.currentTime > 10) writeStore(positionKey, audio.currentTime.toFixed(1));
+    });
+
+    audio.addEventListener('progress', () => {
+      if (audio.buffered.length === 0 || !Number.isFinite(audio.duration)) return;
+      const end = audio.buffered.end(audio.buffered.length - 1);
+      buffered.style.width = `${Math.min((end / audio.duration) * 100, 100).toFixed(3)}%`;
+    });
+
+    audio.addEventListener('play', () => {
+      root.classList.add('is-playing');
+      iconPlay.classList.add('hidden');
+      iconPause.classList.remove('hidden');
+      toggle.setAttribute('aria-label', 'השהה');
+      window.dispatchEvent(new CustomEvent('kedma:audio_play'));
+    });
+
+    audio.addEventListener('pause', () => {
+      root.classList.remove('is-playing');
+      iconPlay.classList.remove('hidden');
+      iconPause.classList.add('hidden');
+      toggle.setAttribute('aria-label', 'נגן');
+      window.dispatchEvent(new CustomEvent('kedma:audio_pause'));
+    });
+
+    audio.addEventListener('ended', () => {
+      clearStore(positionKey);
+      window.dispatchEvent(new CustomEvent('kedma:audio_complete'));
+    });
+
+    downloadLink?.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('kedma:file_download'));
+    });
+
+    const savedRate = Number(readStore(RATE_KEY));
+    applyRate(RATES.includes(savedRate) ? savedRate : 1);
+    syncMuteUi();
+  }
+
+  initAudioPlayer();
+  document.addEventListener('astro:page-load', initAudioPlayer);
 </script>
