@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeHeader from '@/components/HomeHeader.astro';
 import { uniqueTags } from '@/lib/episodes';
+import { withBase } from '@/lib/paths';
 import { getCollection } from 'astro:content';
 
 const episodes = await getCollection('episodes');
@@ -50,13 +51,17 @@ const tags = uniqueTags(episodes);
           />
         </div>
 
-        <div id="search-results" class="flex flex-col"></div>
+        <div
+          id="search-results"
+          class="flex flex-col"
+          data-search-index-url={withBase('search-index.json')}
+        ></div>
         <p id="search-empty" class="hidden font-body text-body-md text-on-surface-variant">לא נמצאו תוצאות.</p>
       </div>
     </div>
   </main>
 
-  <script define:vars={{ searchIndexUrl: `${import.meta.env.BASE_URL}search-index.json` }}>
+  <script>
     import Fuse from 'fuse.js';
 
     type SearchItem = {
@@ -77,8 +82,9 @@ const tags = uniqueTags(episodes);
       const resultsEl = document.getElementById('search-results') as HTMLDivElement;
       const emptyEl = document.getElementById('search-empty') as HTMLParagraphElement;
       const tagButtons = document.querySelectorAll<HTMLButtonElement>('.tag-filter');
+      const searchIndexUrl = resultsEl?.dataset.searchIndexUrl;
 
-      if (!input || !resultsEl || !emptyEl) return;
+      if (!input || !resultsEl || !emptyEl || !searchIndexUrl) return;
 
       try {
         const response = await fetch(searchIndexUrl);
@@ -145,7 +151,6 @@ const tags = uniqueTags(episodes);
       }
     }
 
-    // Initialize when the DOM is ready
-    document.addEventListener('DOMContentLoaded', initSearch);
+    initSearch();
   </script>
 </BaseLayout>
