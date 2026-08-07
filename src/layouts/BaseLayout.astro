@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Analytics from '@/components/Analytics.astro';
 import { withBase } from '@/lib/paths';
 
 interface Props {
@@ -48,6 +49,7 @@ const tamarFontUrl = withBase('fonts/EFT_Tamar.ttf');
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {image && <meta name="twitter:image" content={absoluteUrl(withBase(image))} />}
+    <Analytics />
   </head>
   <body class="min-h-screen">
     <slot />

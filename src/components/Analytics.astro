@@ -1,0 +1,55 @@
+---
+const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+---
+
+{
+  measurementId && (
+    <>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />
+      <script is:inline define:vars={{ measurementId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', measurementId);
+      </script>
+      <script is:inline>
+        function kedmaGtag(eventName, params) {
+          if (typeof gtag !== 'function') return;
+          gtag('event', eventName, params);
+        }
+
+        function episodeParams(detail) {
+          const data = detail && typeof detail === 'object' ? detail : {};
+          return {
+            episode_slug: data.episode_slug || undefined,
+            episode_title: data.episode_title || undefined,
+            audio_url: data.audio_url || undefined,
+          };
+        }
+
+        window.addEventListener('kedma:audio_play', (event) => {
+          kedmaGtag('audio_play', episodeParams(event.detail));
+        });
+
+        window.addEventListener('kedma:audio_pause', (event) => {
+          kedmaGtag('audio_pause', episodeParams(event.detail));
+        });
+
+        window.addEventListener('kedma:audio_complete', (event) => {
+          kedmaGtag('audio_complete', episodeParams(event.detail));
+        });
+
+        window.addEventListener('kedma:file_download', (event) => {
+          const params = episodeParams(event.detail);
+          kedmaGtag('file_download', {
+            ...params,
+            file_name: params.audio_url ? params.audio_url.split('/').pop() : undefined,
+            link_url: params.audio_url,
+          });
+        });
+      </script>
+    </>
+  )
+}

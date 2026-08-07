@@ -98,5 +98,5 @@ const heroAlt = imageCaption ? '' : title;
     </article>
   </main>
 
-  {audioUrl && <AudioPlayer src={audioUrl} title={title} duration={duration} />}
+  {audioUrl && <AudioPlayer src={audioUrl} title={title} duration={duration} episodeSlug={slug} />}
 </BaseLayout>

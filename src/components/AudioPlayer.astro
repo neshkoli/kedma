@@ -6,14 +6,23 @@ interface Props {
   title: string;
   /** RSS duration (HH:MM:SS), shown before metadata loads to avoid a layout shift. */
   duration?: string;
+  /** Episode slug for analytics (e.g. 2025/12/75.html). */
+  episodeSlug?: string;
 }
 
-const { src, title, duration } = Astro.props;
+const { src, title, duration, episodeSlug } = Astro.props;
 const filename = src.split('/').pop() ?? 'episode';
 const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
 ---
 
-<div class="audio-bar" data-audio-player data-storage-key={src}>
+<div
+  class="audio-bar"
+  data-audio-player
+  data-storage-key={src}
+  data-episode-slug={episodeSlug}
+  data-episode-title={title}
+  data-audio-url={src}
+>
   <audio id="episode-audio" preload="metadata" src={src} title={title}>
     הדפדפן שלך לא תומך בנגן אודיו.
   </audio>
@@ -236,6 +245,14 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
 
     root.dataset.audioInit = 'true';
 
+    function episodeAnalyticsDetail() {
+      return {
+        episode_slug: root.dataset.episodeSlug || undefined,
+        episode_title: root.dataset.episodeTitle || undefined,
+        audio_url: root.dataset.audioUrl || audio.currentSrc || undefined,
+      };
+    }
+
     const positionKey = `kedma:pos:${root.dataset.storageKey ?? audio.currentSrc}`;
     let dragging = false;
     let restored = false;
@@ -409,7 +426,7 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
       iconPlay.classList.add('hidden');
       iconPause.classList.remove('hidden');
       toggle.setAttribute('aria-label', 'השהה');
-      window.dispatchEvent(new CustomEvent('kedma:audio_play'));
+      window.dispatchEvent(new CustomEvent('kedma:audio_play', { detail: episodeAnalyticsDetail() }));
     });
 
     audio.addEventListener('pause', () => {
@@ -417,16 +434,16 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
       iconPlay.classList.remove('hidden');
       iconPause.classList.add('hidden');
       toggle.setAttribute('aria-label', 'נגן');
-      window.dispatchEvent(new CustomEvent('kedma:audio_pause'));
+      window.dispatchEvent(new CustomEvent('kedma:audio_pause', { detail: episodeAnalyticsDetail() }));
     });
 
     audio.addEventListener('ended', () => {
       clearStore(positionKey);
-      window.dispatchEvent(new CustomEvent('kedma:audio_complete'));
+      window.dispatchEvent(new CustomEvent('kedma:audio_complete', { detail: episodeAnalyticsDetail() }));
     });
 
     downloadLink?.addEventListener('click', () => {
-      window.dispatchEvent(new CustomEvent('kedma:file_download'));
+      window.dispatchEvent(new CustomEvent('kedma:file_download', { detail: episodeAnalyticsDetail() }));
     });
 
     const savedRate = Number(readStore(RATE_KEY));
