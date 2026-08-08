@@ -2,5 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": false
-  }
+  },
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "kedma.xyz" }],
+      "destination": "https://www.kedma.xyz/:path*",
+      "permanent": true
+    }
+  ]
 }

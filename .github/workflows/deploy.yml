@@ -8,7 +8,7 @@ on:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  ASTRO_SITE: https://kedma-delta.vercel.app
+  ASTRO_SITE: https://www.kedma.xyz
   ASTRO_BASE: /
   PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
 
