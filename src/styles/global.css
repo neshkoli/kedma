@@ -341,10 +341,6 @@
     transform: translateY(0);
   }
 
-  .cusdis-wrap {
-    @apply rounded border border-outline-variant/60 bg-surface-container-low/40 p-4;
-  }
-
   .episode-list-item {
     @apply flex gap-4 py-4 border-b border-outline-variant/60 last:border-b-0;
   }

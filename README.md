@@ -10,7 +10,6 @@ Static website for the [Kedma](https://www.kedma.xyz) Hebrew podcast on Jewish h
 - [Tailwind CSS](https://tailwindcss.com/) — styling with RTL support
 - [MDX](https://mdxjs.com/) — episode content with embedded media
 - [Fuse.js](https://fusejs.io/) — client-side episode search
-- [Cusdis](https://cusdis.com/) — lightweight comments on episode pages
 - [Cloudflare R2](https://developers.cloudflare.com/r2/) — podcast audio hosting (outside this repo)
 
 ## Development
@@ -24,11 +23,7 @@ npm run preview  # preview production build
 
 ### Environment variables
 
-Copy `.env.example` to `.env` and set:
-
-| Variable | Description |
-|---|---|
-| `PUBLIC_CUSDIS_APP_ID` | Cusdis Cloud app ID for episode comments |
+Copy `.env.example` to `.env` and set optional analytics variables as needed.
 
 ## Project structure
 
@@ -57,7 +52,7 @@ Episode URLs follow the Blogger slug pattern: `/{year}/{month}/{episode-slug}.ht
 
 ## Migration
 
-The site was migrated from Google Blogger. See [`plan.md`](plan.md) for the full architecture spec, R2/Cusdis setup, and migration details. Local migration inputs (`Takeout/`, `mp3/`) are gitignored.
+The site was migrated from Google Blogger. See [`plan.md`](plan.md) for the full architecture spec, R2 setup, and migration details. Local migration inputs (`Takeout/`, `mp3/`) are gitignored.
 
 ## License
 

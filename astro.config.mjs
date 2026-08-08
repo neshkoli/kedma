@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { remarkYoutubeEmbed } from './src/plugins/remark-youtube-embed.mjs';
 
 const base = process.env.ASTRO_BASE ?? '/';
-const site = process.env.ASTRO_SITE ?? 'https://neshkoli.github.io';
+const site = process.env.ASTRO_SITE ?? 'https://kedma-delta.vercel.app';
 
 export default defineConfig({
   site,
