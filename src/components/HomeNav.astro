@@ -1,5 +1,6 @@
 ---
 import { withBase } from '@/lib/paths';
+import ClerkAuth from '@/components/ClerkAuth.astro';
 
 interface Props {
   current?: 'home' | 'episodes' | 'periods' | 'search' | 'listen';
@@ -21,8 +22,8 @@ const nav: NavItem[] = [
 ---
 
 <nav class="border-b border-outline-variant bg-parchment-base/95 backdrop-blur-md">
-  <div class="page-container flex items-center justify-between py-3">
-    <div class="flex items-center gap-6 sm:gap-8">
+  <div class="page-container flex items-center justify-between gap-4 py-3">
+    <div class="flex min-w-0 items-center gap-4 sm:gap-6">
       {
         nav.map((item) => {
           const isExternal = 'external' in item;
@@ -45,16 +46,23 @@ const nav: NavItem[] = [
           );
         })
       }
+
+      <a
+        href={withBase('search.html')}
+        class:list={[
+          'rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high',
+          current === 'search' && 'bg-surface-container-high',
+        ]}
+        aria-label="חיפוש"
+        aria-current={current === 'search' ? 'page' : undefined}
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M20 20l-3.5-3.5"></path>
+        </svg>
+      </a>
     </div>
-    <a
-      href={withBase('search.html')}
-      class="rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
-      aria-label="חיפוש"
-    >
-      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="M20 20l-3.5-3.5"></path>
-      </svg>
-    </a>
+
+    <ClerkAuth />
   </div>
 </nav>

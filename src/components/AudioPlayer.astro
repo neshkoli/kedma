@@ -1,5 +1,6 @@
 ---
 import { formatEpisodeDuration } from '@/lib/episodes';
+import { Show } from '@clerk/astro/components';
 
 interface Props {
   src: string;
@@ -162,20 +163,22 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
       />
     </div>
 
-    <a
-      href={src}
-      download={filename}
-      class="audio-btn"
-      data-download-link
-      aria-label="הורדה"
-      title="הורדה"
-    >
-      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 3v12"></path>
-        <path d="M7 10l5 5 5-5"></path>
-        <path d="M5 21h14"></path>
-      </svg>
-    </a>
+    <Show when="signed-in">
+      <a
+        href={src}
+        download={filename}
+        class="audio-btn"
+        data-download-link
+        aria-label="הורדה"
+        title="הורדה"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12"></path>
+          <path d="M7 10l5 5 5-5"></path>
+          <path d="M5 21h14"></path>
+        </svg>
+      </a>
+    </Show>
   </div>
 </div>
 

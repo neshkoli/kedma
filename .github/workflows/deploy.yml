@@ -11,6 +11,7 @@ env:
   ASTRO_SITE: https://www.kedma.xyz
   ASTRO_BASE: /
   PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
+  PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
 concurrency:
   group: vercel-production
