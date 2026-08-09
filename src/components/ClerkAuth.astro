@@ -4,7 +4,7 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
 
 <div class="flex items-center">
   <Show when="signed-out">
-    <SignInButton mode="modal">
+    <SignInButton mode="modal" asChild>
       <button
         type="button"
         class="rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
