@@ -19,38 +19,83 @@ const nav: NavItem[] = [
   { id: 'listen', href: withBase('how-to-listen.html'), label: 'כיצד להאזין' },
   { href: 'https://t.me/kedmachat', label: 'טלגרם', external: true },
 ];
+
+const linkClass = (isCurrent: boolean) =>
+  [
+    'font-body text-label-lg font-semibold transition-colors duration-300',
+    isCurrent
+      ? 'border-b-2 border-aged-gold pb-1 font-bold text-secondary'
+      : 'text-on-surface-variant hover:text-secondary',
+  ] as const;
+
+const mobileLinkClass = (isCurrent: boolean) =>
+  [
+    'block rounded-md px-3 py-2 font-body text-label-lg font-semibold transition-colors',
+    isCurrent
+      ? 'bg-surface-container-high font-bold text-secondary'
+      : 'text-on-surface-variant hover:bg-surface-container-high hover:text-secondary',
+  ] as const;
 ---
 
-<nav class="border-b border-outline-variant bg-parchment-base/95 backdrop-blur-md">
-  <div class="page-container flex items-center justify-between gap-4 py-3">
-    <div class="flex min-w-0 items-center gap-4 sm:gap-6">
-      {
-        nav.map((item) => {
-          const isExternal = 'external' in item;
-          const isCurrent = !isExternal && current === item.id;
+<nav class="home-nav border-b border-outline-variant bg-parchment-base/95 backdrop-blur-md" data-home-nav>
+  <div class="page-container flex items-center justify-between gap-3 py-2 md:py-3">
+    <div class="flex min-w-0 items-center gap-2 md:gap-6">
+      <button
+        type="button"
+        class="home-nav-toggle rounded-full p-1.5 text-ink-blue transition-colors hover:bg-surface-container-high md:hidden"
+        aria-label="תפריט"
+        aria-expanded="false"
+        aria-controls="home-nav-panel"
+        data-home-nav-toggle
+      >
+        <svg
+          class="home-nav-icon-open h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+        <svg
+          class="home-nav-icon-close hidden h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
 
-          return (
-            <a
-              href={item.href}
-              target={isExternal ? '_blank' : undefined}
-              rel={isExternal ? 'noopener noreferrer' : undefined}
-              class:list={[
-                'font-body text-label-lg font-semibold transition-colors duration-300',
-                isCurrent
-                  ? 'border-b-2 border-aged-gold pb-1 font-bold text-secondary'
-                  : 'text-on-surface-variant hover:text-secondary',
-              ]}
-            >
-              {item.label}
-            </a>
-          );
-        })
-      }
+      <div class="hidden items-center gap-4 sm:gap-6 md:flex">
+        {
+          nav.map((item) => {
+            const isExternal = 'external' in item;
+            const isCurrent = !isExternal && current === item.id;
 
+            return (
+              <a
+                href={item.href}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+                class:list={linkClass(isCurrent)}
+              >
+                {item.label}
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-1">
       <a
         href={withBase('search.html')}
         class:list={[
-          'rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high',
+          'rounded-full p-1.5 text-ink-blue transition-colors hover:bg-surface-container-high md:p-2',
           current === 'search' && 'bg-surface-container-high',
         ]}
         aria-label="חיפוש"
@@ -61,8 +106,84 @@ const nav: NavItem[] = [
           <path d="M20 20l-3.5-3.5"></path>
         </svg>
       </a>
-    </div>
 
-    <ClerkAuth />
+      <ClerkAuth />
+    </div>
+  </div>
+
+  <div
+    id="home-nav-panel"
+    class="home-nav-panel hidden border-t border-outline-variant/60 bg-parchment-base md:hidden"
+    data-home-nav-panel
+    hidden
+  >
+    <div class="page-container flex flex-col gap-0.5 py-1">
+      {
+        nav.map((item) => {
+          const isExternal = 'external' in item;
+          const isCurrent = !isExternal && current === item.id;
+
+          return (
+            <a
+              href={item.href}
+              target={isExternal ? '_blank' : undefined}
+              rel={isExternal ? 'noopener noreferrer' : undefined}
+              class:list={mobileLinkClass(isCurrent)}
+            >
+              {item.label}
+            </a>
+          );
+        })
+      }
+    </div>
   </div>
 </nav>
+
+<script>
+  function initHomeNav() {
+    const root = document.querySelector('[data-home-nav]');
+    if (!root || root.hasAttribute('data-nav-init')) return;
+
+    const toggle = root.querySelector('[data-home-nav-toggle]');
+    const panel = root.querySelector('[data-home-nav-panel]');
+    const openIcon = root.querySelector('.home-nav-icon-open');
+    const closeIcon = root.querySelector('.home-nav-icon-close');
+
+    if (!(toggle instanceof HTMLButtonElement) || !(panel instanceof HTMLElement)) return;
+
+    root.setAttribute('data-nav-init', 'true');
+
+    function setOpen(open: boolean) {
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      panel.classList.toggle('hidden', !open);
+      openIcon?.classList.toggle('hidden', open);
+      closeIcon?.classList.toggle('hidden', !open);
+    }
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    panel.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      if (event.target instanceof Node && root.contains(event.target)) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+
+    window.matchMedia('(min-width: 768px)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+
+  initHomeNav();
+  document.addEventListener('astro:page-load', initHomeNav);
+</script>

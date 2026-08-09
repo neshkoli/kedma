@@ -55,7 +55,7 @@ const homeHref = withBase('');
           קדמא
         </h1>
         <p
-          class="hero-line-2 font-tamar text-center leading-none text-primary hero-letter-wash hero-letter-wash-strong"
+          class="hero-line-2 hidden font-tamar text-center leading-none text-primary hero-letter-wash hero-letter-wash-strong md:block"
           data-hero-line-2
         >
           פודקאסט על אנשים וארועים בהיסטוריה היהודית
@@ -66,4 +66,11 @@ const homeHref = withBase('');
       </div>
     </div>
   </div>
+  {
+    !pinned && (
+      <p class="hero-mobile-tagline md:hidden">
+        פודקאסט על אנשים וארועים בהיסטוריה היהודית
+      </p>
+    )
+  }
 </header>

@@ -54,6 +54,8 @@ const { current = 'home', pinned = false } = Astro.props;
     let ticking = false;
 
     function fitLine2ToWidth() {
+      if (!line2.offsetParent) return;
+
       line2.style.fontSize = '';
       const maxWidth = textEl.clientWidth;
       if (maxWidth <= 0) return;

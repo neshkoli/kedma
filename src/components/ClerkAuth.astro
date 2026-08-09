@@ -7,7 +7,7 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
     <SignInButton mode="modal" asChild>
       <button
         type="button"
-        class="rounded-full p-2 text-ink-blue transition-colors hover:bg-surface-container-high"
+        class="rounded-full p-1.5 text-ink-blue transition-colors hover:bg-surface-container-high md:p-2"
         aria-label="התחברות"
         title="התחברות"
       >
@@ -32,7 +32,7 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
     <UserButton
       appearance={{
         elements: {
-          avatarBox: 'h-9 w-9',
+          avatarBox: 'h-8 w-8',
         },
       }}
     />
