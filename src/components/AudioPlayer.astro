@@ -241,24 +241,54 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
     const iconSound = root.querySelector<HTMLElement>('[data-icon-sound]');
     const iconMuted = root.querySelector<HTMLElement>('[data-icon-muted]');
     const volume = root.querySelector<HTMLInputElement>('[data-volume]');
-    const downloadLink = root.querySelector<HTMLElement>('[data-download-link]');
-
     if (!audio || !seek || !played || !buffered || !thumb || !toggle) return;
     if (!iconPlay || !iconPause || !elapsedLabel || !totalLabel) return;
 
     root.dataset.audioInit = 'true';
 
-    function episodeAnalyticsDetail() {
+    function episodeAnalyticsDetail(extra: Record<string, string | number | undefined> = {}) {
+      const audioUrl = root.dataset.audioUrl || audio.currentSrc || undefined;
       return {
         episode_slug: root.dataset.episodeSlug || undefined,
         episode_title: root.dataset.episodeTitle || undefined,
-        audio_url: root.dataset.audioUrl || audio.currentSrc || undefined,
+        audio_url: audioUrl,
+        audio_host: audioUrl ? 'audio.kedma.xyz' : undefined,
+        ...extra,
       };
+    }
+
+    function dispatchAnalytics(eventName: string, extra: Record<string, string | number | undefined> = {}) {
+      window.dispatchEvent(
+        new CustomEvent(eventName, { detail: episodeAnalyticsDetail(extra) }),
+      );
+    }
+
+    function trackListenProgress() {
+      if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+      const percent = Math.floor((audio.currentTime / audio.duration) * 100);
+      for (const milestone of [25, 50, 75, 100]) {
+        if (percent >= milestone && !progressMilestones.has(milestone)) {
+          progressMilestones.add(milestone);
+          dispatchAnalytics('kedma:audio_progress', { percent_listened: milestone });
+        }
+      }
+    }
+
+    function trackListenTime() {
+      if (listenStartedAt === null) return;
+      const seconds = Math.round((performance.now() - listenStartedAt) / 1000);
+      listenStartedAt = null;
+      if (seconds > 0) {
+        dispatchAnalytics('kedma:audio_listen_time', { listen_seconds: seconds });
+      }
     }
 
     const positionKey = `kedma:pos:${root.dataset.storageKey ?? audio.currentSrc}`;
     let dragging = false;
     let restored = false;
+    let hasTrackedPlay = false;
+    const progressMilestones = new Set<number>();
+    let listenStartedAt: number | null = null;
     const resumeToast = root.querySelector<HTMLElement>('[data-resume-toast]');
     let resumeToastTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -416,6 +446,7 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
     audio.addEventListener('timeupdate', () => {
       if (!dragging) setProgressUi(audio.currentTime, audio.duration);
       if (audio.currentTime > 10) writeStore(positionKey, audio.currentTime.toFixed(1));
+      if (!audio.paused) trackListenProgress();
     });
 
     audio.addEventListener('progress', () => {
@@ -429,7 +460,11 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
       iconPlay.classList.add('hidden');
       iconPause.classList.remove('hidden');
       toggle.setAttribute('aria-label', 'השהה');
-      window.dispatchEvent(new CustomEvent('kedma:audio_play', { detail: episodeAnalyticsDetail() }));
+      listenStartedAt = performance.now();
+      if (!hasTrackedPlay) {
+        hasTrackedPlay = true;
+        dispatchAnalytics('kedma:audio_play');
+      }
     });
 
     audio.addEventListener('pause', () => {
@@ -437,16 +472,23 @@ const initialTotal = duration ? formatEpisodeDuration(duration) : '--:--';
       iconPlay.classList.remove('hidden');
       iconPause.classList.add('hidden');
       toggle.setAttribute('aria-label', 'נגן');
-      window.dispatchEvent(new CustomEvent('kedma:audio_pause', { detail: episodeAnalyticsDetail() }));
+      if (audio.ended) return;
+      trackListenTime();
+      dispatchAnalytics('kedma:audio_pause');
     });
 
     audio.addEventListener('ended', () => {
       clearStore(positionKey);
-      window.dispatchEvent(new CustomEvent('kedma:audio_complete', { detail: episodeAnalyticsDetail() }));
+      trackListenTime();
+      dispatchAnalytics('kedma:audio_complete');
     });
 
-    downloadLink?.addEventListener('click', () => {
-      window.dispatchEvent(new CustomEvent('kedma:file_download', { detail: episodeAnalyticsDetail() }));
+    root.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest('[data-download-link]');
+      if (!link) return;
+      dispatchAnalytics('kedma:file_download');
     });
 
     const savedRate = Number(readStore(RATE_KEY));

@@ -22,32 +22,53 @@ const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
 
         function episodeParams(detail) {
           const data = detail && typeof detail === 'object' ? detail : {};
+          const audioUrl = data.audio_url || undefined;
+          const fileName = audioUrl ? audioUrl.split('/').pop() : undefined;
           return {
             episode_slug: data.episode_slug || undefined,
             episode_title: data.episode_title || undefined,
-            audio_url: data.audio_url || undefined,
+            audio_url: audioUrl,
+            audio_host: data.audio_host || undefined,
+            file_name: fileName,
+            file_extension: fileName && fileName.includes('.') ? fileName.split('.').pop() : undefined,
+            percent_listened: data.percent_listened,
+            listen_seconds: data.listen_seconds,
           };
         }
 
+        function cleanParams(params) {
+          return Object.fromEntries(
+            Object.entries(params).filter(([, value]) => value !== undefined && value !== null),
+          );
+        }
+
+        // First play per episode page visit — use this for unique listener counts.
         window.addEventListener('kedma:audio_play', (event) => {
-          kedmaGtag('audio_play', episodeParams(event.detail));
+          kedmaGtag('audio_play', cleanParams(episodeParams(event.detail)));
         });
 
         window.addEventListener('kedma:audio_pause', (event) => {
-          kedmaGtag('audio_pause', episodeParams(event.detail));
+          kedmaGtag('audio_pause', cleanParams(episodeParams(event.detail)));
         });
 
         window.addEventListener('kedma:audio_complete', (event) => {
-          kedmaGtag('audio_complete', episodeParams(event.detail));
+          kedmaGtag('audio_complete', cleanParams(episodeParams(event.detail)));
+        });
+
+        window.addEventListener('kedma:audio_progress', (event) => {
+          kedmaGtag('audio_progress', cleanParams(episodeParams(event.detail)));
+        });
+
+        window.addEventListener('kedma:audio_listen_time', (event) => {
+          kedmaGtag('audio_listen_time', cleanParams(episodeParams(event.detail)));
         });
 
         window.addEventListener('kedma:file_download', (event) => {
           const params = episodeParams(event.detail);
-          kedmaGtag('file_download', {
+          kedmaGtag('file_download', cleanParams({
             ...params,
-            file_name: params.audio_url ? params.audio_url.split('/').pop() : undefined,
             link_url: params.audio_url,
-          });
+          }));
         });
       </script>
     </>

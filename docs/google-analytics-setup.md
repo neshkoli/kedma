@@ -54,25 +54,43 @@ In GA4: **Admin** → **Data display** → **Custom definitions** → **Create c
 |------------------|-------|------------------|
 | Episode slug     | Event | `episode_slug`   |
 | Episode title    | Event | `episode_title`  |
+| Audio URL        | Event | `audio_url`      |
+| Percent listened | Event | `percent_listened` |
+| Listen seconds   | Event | `listen_seconds` |
 
-Create both before relying on historical breakdowns (GA4 does not backfill dimensions on old events).
+Create all five before relying on historical breakdowns (GA4 does not backfill dimensions on old events).
+
+### Mark key events (recommended)
+
+In GA4: **Admin** → **Data display** → **Events** → toggle **Mark as key event** for:
+
+- `audio_play` — unique listeners (first play per page visit)
+- `file_download` — episode downloads
+- `audio_complete` — finished episodes (optional)
 
 ---
 
 ## 4. What the site tracks
 
-| Metric            | GA4 event / report        | When it fires                          |
-|-------------------|---------------------------|----------------------------------------|
-| Site visitors     | `page_view` (automatic)   | Every page load                        |
-| Listeners         | `audio_play`              | User starts episode playback           |
-| Downloads         | `file_download`           | User clicks the download button        |
-| Engagement (extra)| `audio_pause`, `audio_complete` | Pause / finish listening        |
+Audio is hosted on Cloudflare R2 at `audio.kedma.xyz`. Playback and download are tracked **from the site player** via client-side GA4 events (direct CDN requests are not counted).
 
-Episode events include:
+| Metric            | GA4 event          | When it fires                                      |
+|-------------------|--------------------|----------------------------------------------------|
+| Site visitors     | `page_view`        | Every page load (automatic)                        |
+| Listeners         | `audio_play`       | First play per episode page visit                  |
+| Listen depth      | `audio_progress`   | 25%, 50%, 75%, and 100% of episode duration        |
+| Listen time       | `audio_listen_time`| Pause or finish — includes `listen_seconds`        |
+| Downloads         | `file_download`    | Signed-in user clicks download in the player       |
+| Finished          | `audio_complete`   | Episode plays to the end                           |
+| Engagement (extra)| `audio_pause`      | User pauses playback                               |
+
+Every audio event includes per-episode parameters:
 
 - `episode_slug` — e.g. `2025/12/75.html`
 - `episode_title` — full Hebrew title
-- `audio_url` — R2 audio file URL
+- `audio_url` — full R2 URL, e.g. `https://audio.kedma.xyz/episodes/2025/12/75.mp3`
+- `audio_host` — `audio.kedma.xyz`
+- `file_name` / `file_extension` — derived from the audio URL
 
 Implementation: `src/components/Analytics.astro` listens for player events from `src/components/AudioPlayer.astro`.
 
@@ -90,12 +108,18 @@ After traffic flows (allow 24–48 hours for full reporting):
 
 **Reports** → **Engagement** → **Events** → select `audio_play`
 
-- **Event count** — total play starts  
+- **Event count** — unique listen starts (one per page visit, not per resume)
 - **Total users** — unique listeners (approximate)
 
 Add breakdown: **Episode slug** or **Episode title** (custom dimensions from step 3).
 
-### Downloads
+### Listen depth (how far people listen)
+
+**Reports** → **Engagement** → **Events** → select `audio_progress`
+
+Break down by **Episode slug** and **Percent listened** to see 25/50/75/100% completion per episode.
+
+### Downloads per episode
 
 **Reports** → **Engagement** → **Events** → select `file_download`
 

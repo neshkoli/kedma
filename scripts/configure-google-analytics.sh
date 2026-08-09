@@ -140,7 +140,13 @@ else:
     print(f"Stream URL already set to {SITE_URL}")
 
 existing = {d.parameter_name: d.display_name for d in client.list_custom_dimensions(parent=property_name)}
-for param, display in [("episode_slug", "Episode slug"), ("episode_title", "Episode title")]:
+for param, display in [
+    ("episode_slug", "Episode slug"),
+    ("episode_title", "Episode title"),
+    ("audio_url", "Audio URL"),
+    ("percent_listened", "Percent listened"),
+    ("listen_seconds", "Listen seconds"),
+]:
     if param in existing:
         print(f"Custom dimension exists: {param} ({existing[param]})")
     else:
