@@ -1,9 +1,9 @@
 ---
-import { Show, SignInButton, UserButton } from '@clerk/astro/components';
+import { SignInButton, UserButton } from '@clerk/astro/components';
 ---
 
-<div class="flex items-center">
-  <Show when="signed-out">
+<div class="flex items-center" data-clerk-auth>
+  <div data-clerk-signed-out>
     <SignInButton mode="modal" asChild>
       <button
         type="button"
@@ -26,9 +26,9 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
         </svg>
       </button>
     </SignInButton>
-  </Show>
+  </div>
 
-  <Show when="signed-in">
+  <div class="hidden" data-clerk-signed-in>
     <UserButton
       appearance={{
         elements: {
@@ -36,5 +36,44 @@ import { Show, SignInButton, UserButton } from '@clerk/astro/components';
         },
       }}
     />
-  </Show>
+  </div>
 </div>
+
+<script>
+  import { $authStore, $isLoadedStore } from '@clerk/astro/client';
+
+  function syncClerkAuth(root: Element) {
+    if (root.hasAttribute('data-clerk-auth-init')) return;
+
+    const signedOut = root.querySelector('[data-clerk-signed-out]');
+    const signedIn = root.querySelector('[data-clerk-signed-in]');
+    if (!(signedOut instanceof HTMLElement) || !(signedIn instanceof HTMLElement)) return;
+
+    root.setAttribute('data-clerk-auth-init', 'true');
+
+    const update = () => {
+      const userId = $authStore.get()?.userId;
+      const loaded = $isLoadedStore.get();
+
+      if (!loaded || !userId) {
+        signedOut.classList.remove('hidden');
+        signedIn.classList.add('hidden');
+        return;
+      }
+
+      signedOut.classList.add('hidden');
+      signedIn.classList.remove('hidden');
+    };
+
+    $isLoadedStore.subscribe(update);
+    $authStore.subscribe(update);
+    update();
+  }
+
+  function initClerkAuth() {
+    document.querySelectorAll('[data-clerk-auth]').forEach(syncClerkAuth);
+  }
+
+  initClerkAuth();
+  document.addEventListener('astro:page-load', initClerkAuth);
+</script>

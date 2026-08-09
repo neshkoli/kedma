@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import clerk from '@clerk/astro';
+import { heIL } from '@clerk/localizations';
 import tailwindcss from '@tailwindcss/vite';
 import { remarkYoutubeEmbed } from './src/plugins/remark-youtube-embed.mjs';
 
@@ -24,7 +25,7 @@ export default defineConfig({
       remarkPlugins: [[remarkYoutubeEmbed, { base }]],
     }),
   },
-  integrations: [clerk(), mdx()],
+  integrations: [clerk({ localization: heIL }), mdx()],
   vite: {
     plugins: [tailwindcss()],
   },

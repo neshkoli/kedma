@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 migration/.venv/
+migration/ga-oauth-client.json
 
 # Build output
 dist/
