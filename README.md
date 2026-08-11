@@ -45,7 +45,19 @@ Episode URLs follow the Blogger slug pattern: `/{year}/{month}/{episode-slug}.ht
 
 ## Content workflow
 
-1. Add or edit an episode MDX file under `src/content/episodes/{year}/{month}/`
+### New episode (local publisher)
+
+```bash
+cd tools/episode-publisher && npm install   # first time
+# set R2_* keys in repo-root .env (see .env.example)
+npm run publish-episode   # http://127.0.0.1:8787 — localhost only
+```
+
+Fill the form, preview, then publish (uploads MP3 to R2, writes markdown/images, pushes `main`). Use `PUBLISH_DRY_RUN=1` to skip R2 and git.
+
+### Manual
+
+1. Add or edit an episode Markdown file under `src/content/episodes/{year}/{month}/`
 2. Place images in `public/images/episodes/{year}/{month}/{slug}/`
 3. Host audio on R2 and reference it via `audioUrl` in frontmatter
 4. Run `npm run build` — the search index is regenerated automatically

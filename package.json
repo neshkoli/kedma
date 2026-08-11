@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "node scripts/generate-search-index.mjs && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "publish-episode": "npm --prefix tools/episode-publisher start"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.2",

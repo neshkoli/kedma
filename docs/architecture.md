@@ -96,7 +96,8 @@ Vercel Git auto-deploy is **disabled** (`vercel.json` → `git.deploymentEnabled
 - Object key pattern: `episodes/{YYYY}/{MM}/{slug}.{mp3|m4a}`
 - Public access via custom domain `audio.kedma.xyz` (configured under bucket → **Settings** → **Public access** / **Custom Domains**)
 - CORS policy for browser playback is defined in [`migration/r2-cors.json`](../migration/r2-cors.json) (allows `GET`/`HEAD` from `https://www.kedma.xyz` and `https://kedma.xyz`)
-- Audio is **not** deployed by CI — upload new episodes manually (dashboard, `wrangler`, or `rclone`)
+- Audio is **not** deployed by CI — upload via the local publisher (`npm run publish-episode`) or manually (dashboard, `wrangler`, or `rclone`)
+- Local publisher: [`tools/episode-publisher/`](../tools/episode-publisher/) — binds to `127.0.0.1` only; not part of the Astro/Vercel build
 
 ---
 

@@ -1,0 +1,17 @@
+{
+  "name": "kedma-episode-publisher",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.901.0",
+    "busboy": "^1.6.0",
+    "dotenv": "^17.2.2",
+    "marked": "^16.3.0",
+    "music-metadata": "^11.9.0"
+  }
+}
