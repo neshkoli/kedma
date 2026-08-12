@@ -1,72 +1,163 @@
 ---
 import EpisodeDateDuration from '@/components/EpisodeDateDuration.astro';
-import { episodeUrl, episodeSnippet, type Episode } from '@/lib/episodes';
+import {
+  episodeUrl,
+  episodeSnippet,
+  formatEpisodeDuration,
+  formatHebrewDate,
+  type Episode,
+} from '@/lib/episodes';
 import { withBase } from '@/lib/paths';
 
 interface Props {
   episode: Episode;
+  /** Editorial rhythm on the home archive grid. */
+  variant?: 'feature' | 'side' | 'standard';
 }
 
-const { episode } = Astro.props;
+const { episode, variant = 'standard' } = Astro.props;
 const { title, date, image, periodName, tags, duration } = episode.data;
-const { text: snippet, truncated } = episodeSnippet(episode);
+const snippetMax = variant === 'feature' ? 420 : variant === 'side' ? 180 : 120;
+const { text: snippet, truncated } = episodeSnippet(episode, snippetMax);
 const url = episodeUrl(episode);
+const isFeature = variant === 'feature';
+const dateLabel = formatHebrewDate(date);
+const durationLabel = duration ? formatEpisodeDuration(duration) : null;
 ---
 
-<a href={url} class="group block overflow-hidden rounded border border-outline-variant/30 bg-surface/60 p-5 transition-colors hover:bg-surface-container-low/80 md:p-6">
-  <div class="flex flex-col items-start gap-6">
-    {
-      image && (
-        <div class="aspect-square w-full shrink-0 overflow-hidden manuscript-border">
-          <img
-            src={withBase(image)}
-            alt=""
-            class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-            loading="lazy"
-          />
+<a
+  href={url}
+  class:list={[
+    'archive-card group',
+    variant === 'feature' && 'archive-card-feature',
+    variant === 'side' && 'archive-card-side',
+    variant === 'standard' && 'archive-card-standard',
+  ]}
+>
+  {
+    isFeature ? (
+      <>
+        {/*
+          Floated media stack (image + date/length/period). Title + body stay in
+          normal flow so they sit above/ beside the text column and wrap around.
+        */}
+        <div class="archive-card-feature-media">
+          {
+            image && (
+              <div class="archive-card-media manuscript-border">
+                <img
+                  src={withBase(image)}
+                  alt=""
+                  class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            )
+          }
+          <p class="archive-card-lede font-body text-label-sm font-bold text-secondary">
+            <span>{dateLabel}</span>
+            {
+              durationLabel && (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <span dir="ltr">{durationLabel}</span>
+                </>
+              )
+            }
+            {
+              periodName && (
+                <>
+                  {' '}
+                  <span class="badge-period align-middle font-medium">{periodName}</span>
+                </>
+              )
+            }
+          </p>
         </div>
-      )
-    }
-    <div class="min-w-0 flex-1">
-      <div class="mb-3">
-        <EpisodeDateDuration
-          date={date}
-          duration={duration}
-          textClass="font-body text-label-sm font-bold text-secondary"
-        />
-        {periodName && (
-          <span class="mt-2 inline-block rounded bg-surface-container-high px-2 py-0.5 font-body text-[10px] font-bold text-outline">
-            {periodName}
-          </span>
-        )}
-      </div>
-      <h3 class="card-title mb-3 transition-colors duration-300 group-hover:text-secondary">
-        {title}
-      </h3>
-      {snippet && (
-        <p class="mb-5 break-words font-body text-body-md leading-[1.67] text-on-surface-variant">{snippet}</p>
-      )}
-      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h3 class="card-title-lg mb-2 transition-colors duration-300 group-hover:text-secondary">
+          {title}
+        </h3>
         {
-          tags.length > 0 && (
-            <div class="flex flex-wrap gap-2">
-              {tags.slice(0, 3).map((tag) => (
-                <span class="font-body text-label-sm text-slate-gray">#{tag}</span>
-              ))}
+          snippet && (
+            <p class="mb-3 break-words font-body text-body-md leading-[1.67] text-on-surface-variant">
+              {snippet}
+            </p>
+          )
+        }
+        <p class="archive-card-meta">
+          {
+            tags.slice(0, 3).map((tag) => (
+              <span class="me-2 font-body text-label-sm text-slate-gray">#{tag}</span>
+            ))
+          }
+          {
+            truncated && (
+              <span class="inline-flex items-center gap-1 font-body text-label-lg font-bold text-ink-blue transition-colors group-hover:text-secondary">
+                קרא עוד
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+              </span>
+            )
+          }
+        </p>
+      </>
+    ) : (
+      <>
+        {
+          image && (
+            <div class="archive-card-media manuscript-border">
+              <img
+                src={withBase(image)}
+                alt=""
+                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
             </div>
           )
         }
-        {
-          truncated && (
-            <span class="inline-flex items-center gap-1 font-body text-label-lg font-bold text-ink-blue transition-colors group-hover:text-secondary">
-              קרא עוד
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6"></path>
-              </svg>
-            </span>
-          )
-        }
-      </div>
-    </div>
-  </div>
+        <div class="archive-card-body min-w-0">
+          <div class="mb-3 flex flex-wrap items-center gap-2">
+            <EpisodeDateDuration
+              date={date}
+              duration={duration}
+              textClass="font-body text-label-sm font-bold text-secondary"
+            />
+            {periodName && <span class="badge-period">{periodName}</span>}
+          </div>
+          <h3 class="card-title mb-3 transition-colors duration-300 group-hover:text-secondary">
+            {title}
+          </h3>
+          {
+            snippet && (
+              <p class="archive-card-excerpt mb-4 break-words font-body text-body-md leading-[1.67] text-on-surface-variant">
+                {snippet}
+              </p>
+            )
+          }
+          <div class="archive-card-meta flex flex-wrap items-center justify-between gap-3">
+            {
+              tags.length > 0 && (
+                <div class="flex flex-wrap gap-2">
+                  {tags.slice(0, 3).map((tag) => (
+                    <span class="font-body text-label-sm text-slate-gray">#{tag}</span>
+                  ))}
+                </div>
+              )
+            }
+            {
+              truncated && (
+                <span class="inline-flex items-center gap-1 font-body text-label-lg font-bold text-ink-blue transition-colors group-hover:text-secondary">
+                  קרא עוד
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                  </svg>
+                </span>
+              )
+            }
+          </div>
+        </div>
+      </>
+    )
+  }
 </a>

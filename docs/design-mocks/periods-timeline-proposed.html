@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mock — תקופות (ציר זמן) | קדמא</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Noto+Sans+Hebrew:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fcf9ef;
+        --ink: #1b263b;
+        --gold: #c5a059;
+        --secondary: #775a19;
+        --muted: #45474d;
+        --line: #c5c6cd;
+        --surface: #f7f4e9;
+        --font: 'Hanken Grotesk', 'Noto Sans Hebrew', sans-serif;
+        --max: 880px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font);
+        background: var(--bg);
+        color: #1c1c16;
+        line-height: 1.55;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .banner {
+        background: var(--ink);
+        color: #f5f2e8;
+        font-size: 0.8125rem;
+        padding: 0.65rem 1rem;
+        text-align: center;
+      }
+
+      .banner strong {
+        color: var(--gold);
+      }
+
+      .page {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+
+      header h1 {
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(1.75rem, 3vw, 2.25rem);
+      }
+
+      header p {
+        margin: 0.65rem 0 0;
+        color: var(--muted);
+        font-size: 1.0625rem;
+        max-width: 36rem;
+      }
+
+      .compare {
+        margin: 1.5rem 0 2rem;
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      @media (min-width: 720px) {
+        .compare {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .chip {
+        border-radius: 0.4rem;
+        padding: 0.85rem 1rem;
+        font-size: 0.875rem;
+        border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+        background: #fff8;
+      }
+
+      .chip.now {
+        border-style: dashed;
+        color: var(--muted);
+      }
+
+      .chip.next {
+        border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
+        background: color-mix(in srgb, var(--gold) 10%, transparent);
+      }
+
+      .chip strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--ink);
+      }
+
+      /* Timeline */
+      .era {
+        margin: 0 0 2.25rem;
+      }
+
+      .era-label {
+        position: sticky;
+        top: 0.5rem;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.85rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        background: var(--ink);
+        color: #f5f2e8;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        box-shadow: 0 6px 16px rgba(5, 17, 37, 0.16);
+      }
+
+      .era-label::before {
+        content: '';
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 50%;
+        background: var(--gold);
+      }
+
+      .rail {
+        position: relative;
+        padding-inline-start: 1.15rem;
+        border-inline-start: 2px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .row {
+        position: relative;
+        display: grid;
+        grid-template-columns: 3.25rem 1fr auto;
+        gap: 0.85rem;
+        align-items: center;
+        padding: 0.7rem 0.85rem;
+        border-radius: 0.4rem;
+        background: color-mix(in srgb, #fff 45%, var(--surface));
+        border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+        transition: border-color 160ms ease, box-shadow 200ms ease, transform 180ms ease;
+      }
+
+      .row:hover {
+        border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
+        box-shadow: 0 8px 20px rgba(5, 17, 37, 0.07);
+        transform: translateX(-2px);
+      }
+
+      .row::before {
+        content: '';
+        position: absolute;
+        inset-inline-start: -1.28rem;
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 2px solid var(--gold);
+      }
+
+      .thumb {
+        width: 3.25rem;
+        height: 3.25rem;
+        border-radius: 0.35rem;
+        object-fit: cover;
+        border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+        background: #ddd;
+      }
+
+      .title {
+        font-weight: 650;
+        color: var(--ink);
+        font-size: 1rem;
+        line-height: 1.35;
+      }
+
+      .sub {
+        color: var(--muted);
+        font-size: 0.8125rem;
+        margin-top: 0.15rem;
+      }
+
+      .period {
+        color: var(--secondary);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 640px) {
+        .row {
+          grid-template-columns: 3.25rem 1fr;
+        }
+
+        .period {
+          grid-column: 2;
+          white-space: normal;
+        }
+      }
+
+      .notes {
+        margin-top: 2rem;
+        padding: 1.1rem 1.25rem;
+        border: 1px dashed color-mix(in srgb, var(--gold) 55%, var(--line));
+        background: color-mix(in srgb, var(--gold) 8%, transparent);
+        border-radius: 0.4rem;
+        font-size: 0.9rem;
+      }
+
+      .notes h3 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+        color: var(--ink);
+      }
+
+      .notes ul {
+        margin: 0;
+        padding-inline-start: 1.2rem;
+      }
+
+      .back {
+        display: inline-block;
+        margin-bottom: 1.25rem;
+        color: var(--secondary);
+        font-weight: 650;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--gold);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <strong>Mock בלבד</strong> — הצעה לדף תקופות כציר זמן במקום טבלה. שומר על שמישות סריקה + מרגיש היסטורי יותר.
+    </div>
+
+    <div class="page">
+      <a class="back" href="home-proposed.html">← חזרה ל־mock של דף הבית</a>
+
+      <header>
+        <h1>תקופות בהיסטוריה</h1>
+        <p>סדר כרונולוגי של פרקי הפודקאסט — מקובץ לפי עידנים, לא כגיליון אלקטרוני.</p>
+      </header>
+
+      <div class="compare">
+        <div class="chip now">
+          <strong>היום</strong>
+          טבלת שורות אחידה: תמונה קטנה · שם · תקופה. ברור, אבל מרגיש כמו אדמין / spreadsheet.
+        </div>
+        <div class="chip next">
+          <strong>הצעה</strong>
+          ציר זמן עם כותרות עידן דביקות, נקודות זהב על מסילה, ושורה עשירה יותר לסריקה מהירה.
+        </div>
+      </div>
+
+      <section class="era" aria-labelledby="era-ancient">
+        <div class="era-label" id="era-ancient">שיבת ציון והעת העתיקה</div>
+        <div class="rail">
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2020/02/27/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 27 • הצהרת כורש</div>
+              <div class="sub">העליה הראשונה הראשונה</div>
+            </div>
+            <div class="period">המאה ה-6 לפנה״ס</div>
+          </a>
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2020/02/28/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 28 • מגילת אסתר</div>
+              <div class="sub">הסיפור האמיתי</div>
+            </div>
+            <div class="period">המאה ה-5 לפנה״ס</div>
+          </a>
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2023/07/61/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 61 • כנסת הגדולה</div>
+              <div class="sub">מי היו ומה עשו</div>
+            </div>
+            <div class="period">המאות ה-5–4 לפנה״ס</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="era" aria-labelledby="era-second">
+        <div class="era-label" id="era-second">בית שני וחורבן</div>
+        <div class="rail">
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2020/12/39/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 39 • מאי חנוכה</div>
+              <div class="sub">חשמונאים ומרידה</div>
+            </div>
+            <div class="period">המאה ה-2 לפנה״ס</div>
+          </a>
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2021/07/46/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 46 • הורדוס</div>
+              <div class="sub">מלך ומיתוס</div>
+            </div>
+            <div class="period">המאה ה-1 לפנה״ס</div>
+          </a>
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2020/07/33/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 33 • מרד בר כוכבא</div>
+              <div class="sub">המאה ה-2 לספירה</div>
+            </div>
+            <div class="period">המאה ה-2</div>
+          </a>
+        </div>
+      </section>
+
+      <section class="era" aria-labelledby="era-golden">
+        <div class="era-label" id="era-golden">תור הזהב וימי הביניים</div>
+        <div class="rail">
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2018/12/4/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 4 • תחילת תור הזהב בספרד</div>
+              <div class="sub">פריחה תרבותית</div>
+            </div>
+            <div class="period">המאה ה-10</div>
+          </a>
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2019/04/12/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 12 • רש״י</div>
+              <div class="sub">פרשן הדורות</div>
+            </div>
+            <div class="period">המאה ה-11</div>
+          </a>
+          <a class="row" href="#">
+            <img class="thumb" src="https://www.kedma.xyz/images/episodes/2025/09/73/hero.jpg" alt="" />
+            <div>
+              <div class="title">פרק 73 • אבן גבירול</div>
+              <div class="sub">שירה, פילוסופיה, חיים קשים</div>
+            </div>
+            <div class="period">המאה ה-11</div>
+          </a>
+        </div>
+      </section>
+
+      <aside class="notes">
+        <h3>למה זה עדיף על הטבלה הנוכחית</h3>
+        <ul>
+          <li>מספר את הסיפור ההיסטורי (עידנים) במקום רשימת DB</li>
+          <li>Sticky era labels עוזרים להתמצא בגלילה ארוכה</li>
+          <li>עדיין צפוף ושמיש — כל שורה ניתנת לסריקה מהירה</li>
+          <li>אותו רעיון יכול להחליף גם את דף ״פרקים״ (עם קיבוץ לפי שנה במקום עידן)</li>
+        </ul>
+      </aside>
+    </div>
+  </body>
+</html>

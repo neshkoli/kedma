@@ -3,9 +3,11 @@ import { formatEpisodeDuration } from '@/lib/episodes';
 
 interface Props {
   duration?: string;
+  /** Visible label while idle. Defaults to "נגן פרק". */
+  label?: string;
 }
 
-const { duration } = Astro.props;
+const { duration, label = 'נגן פרק' } = Astro.props;
 const durationLabel = duration ? formatEpisodeDuration(duration) : null;
 ---
 
@@ -13,7 +15,8 @@ const durationLabel = duration ? formatEpisodeDuration(duration) : null;
   type="button"
   class="episode-play-btn"
   data-episode-play
-  aria-label="נגן פרק"
+  data-idle-label={label}
+  aria-label={label}
 >
   <span class="episode-play-btn-icon" aria-hidden="true">
     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" data-episode-play-icon>
@@ -24,7 +27,7 @@ const durationLabel = duration ? formatEpisodeDuration(duration) : null;
       <rect x="13.5" y="5.5" width="3.5" height="13" rx="1"></rect>
     </svg>
   </span>
-  <span data-episode-play-label>נגן פרק</span>
+  <span data-episode-play-label>{label}</span>
   {
     durationLabel && (
       <span class="episode-play-btn-duration" dir="ltr">
@@ -42,6 +45,7 @@ const durationLabel = duration ? formatEpisodeDuration(duration) : null;
 
     button.dataset.playInit = 'true';
 
+    const idleLabel = button.dataset.idleLabel || 'נגן פרק';
     const playIcon = button.querySelector('[data-episode-play-icon]');
     const pauseIcon = button.querySelector('[data-episode-pause-icon]');
     const label = button.querySelector('[data-episode-play-label]');
@@ -50,8 +54,8 @@ const durationLabel = duration ? formatEpisodeDuration(duration) : null;
       const playing = !audio!.paused && !audio!.ended;
       playIcon?.classList.toggle('hidden', playing);
       pauseIcon?.classList.toggle('hidden', !playing);
-      label!.textContent = playing ? 'השהה' : 'נגן פרק';
-      button!.setAttribute('aria-label', playing ? 'השהה' : 'נגן פרק');
+      label!.textContent = playing ? 'השהה' : idleLabel;
+      button!.setAttribute('aria-label', playing ? 'השהה' : idleLabel);
       button!.classList.toggle('is-playing', playing);
     }
 
