@@ -25,6 +25,9 @@ export function runGit(repoRoot, args) {
 }
 
 /**
+ * Commit episode paths on the current branch, then push that commit to origin/main.
+ * Uses `HEAD:main` so a feature-branch worktree still updates production main.
+ *
  * @param {{
  *   repoRoot: string,
  *   paths: string[],
@@ -50,8 +53,19 @@ export async function gitPublish(options) {
     return { committed: false, pushed: false, dryRun: true, stagedPaths: paths };
   }
 
+  const { stdout: currentBranchOut } = await runGit(repoRoot, ['branch', '--show-current']);
+  const currentBranch = currentBranchOut.trim();
+
   await runGit(repoRoot, ['add', '--', ...paths]);
   await runGit(repoRoot, ['commit', '-m', message]);
-  await runGit(repoRoot, ['push', remote, branch]);
-  return { committed: true, pushed: true, dryRun: false };
+
+  // Push current HEAD to the deploy branch (main), not "local main" which may lag.
+  await runGit(repoRoot, ['push', remote, `HEAD:${branch}`]);
+  return {
+    committed: true,
+    pushed: true,
+    dryRun: false,
+    fromBranch: currentBranch,
+    toBranch: branch,
+  };
 }
