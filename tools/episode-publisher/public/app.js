@@ -38,9 +38,7 @@ function fieldValues() {
     periodName: String(fd.get('periodName') || ''),
     tags: String(fd.get('tags') || ''),
     duration: String(fd.get('duration') || ''),
-    body: String(fd.get('body') || ''),
-    coverName: coverInput.files?.[0]?.name || '',
-    audioName: audioInput.files?.[0]?.name || '',
+    body: String(fd.get('body') || '').replace(/\r\n/g, '\n'),
   };
 }
 
@@ -115,7 +113,8 @@ bodyImagesInput.addEventListener('change', async () => {
     insertAtCursor(bodyInput, `${data.markdown}\n`);
   }
   bodyImagesInput.value = '';
-  setStatus(`נוספו ${files.length} תמונות ל-Markdown`);
+  invalidatePreview();
+  setStatus(`נוספו ${files.length} תמונות ל-Markdown — לחץ שוב על תצוגה מקדימה לפני פרסום`);
 });
 
 function insertAtCursor(textarea, text) {
@@ -195,7 +194,6 @@ publishBtn.addEventListener('click', async () => {
 
   const fd = new FormData();
   for (const [key, value] of Object.entries(values)) {
-    if (key === 'coverName' || key === 'audioName') continue;
     fd.append(key, value);
   }
   fd.append('previewToken', previewToken);
@@ -210,7 +208,7 @@ publishBtn.addEventListener('click', async () => {
     const data = await res.json();
     if (!res.ok) {
       setStatus(
-        `כשל בפרסום: ${data.error}\nצעדים שהושלמו: ${(data.completedSteps || []).join(', ') || 'none'}`,
+        `כשל בפרסום: ${data.error}${data.hint ? `\n(${data.hint})` : ''}\nצעדים שהושלמו: ${(data.completedSteps || []).join(', ') || 'none'}`,
         'error',
       );
       publishBtn.disabled = false;

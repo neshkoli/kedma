@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, writeFile, readFile, unlink } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, unlink, access } from 'node:fs/promises';
+import { constants as fsConstants } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
@@ -21,13 +22,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TOOL_ROOT = __dirname;
 const REPO_ROOT = path.resolve(TOOL_ROOT, '../..');
 const PUBLIC_DIR = path.join(TOOL_ROOT, 'public');
+const SITE_PUBLIC_DIR = path.join(REPO_ROOT, 'public');
 const EPISODES_ROOT = path.join(REPO_ROOT, 'src/content/episodes');
+const STAGING_ROOT = path.join(tmpdir(), 'kedma-episode-staging');
 const HOST = '127.0.0.1';
 const PORT = Number(process.env.PUBLISH_PORT || 8787);
 
 dotenv.config({ path: path.join(REPO_ROOT, '.env') });
 
 marked.setOptions({ gfm: true });
+
+/** @type {Map<string, { payload: ReturnType<typeof buildPreviewPayload>, createdAt: number }>} */
+const previewSessions = new Map();
 
 function previewTokenFor(payload) {
   const canonical = JSON.stringify(payload);
@@ -50,6 +56,7 @@ function contentTypeFor(filePath) {
       '.html': 'text/html; charset=utf-8',
       '.js': 'text/javascript; charset=utf-8',
       '.css': 'text/css; charset=utf-8',
+      '.ico': 'image/x-icon',
       '.svg': 'image/svg+xml',
       '.png': 'image/png',
       '.jpg': 'image/jpeg',
@@ -60,7 +67,51 @@ function contentTypeFor(filePath) {
   );
 }
 
+async function pathExists(filePath) {
+  try {
+    await access(filePath, fsConstants.F_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolve episode image for preview:
+ * 1) staging dir for in-progress episode
+ * 2) repo public/ (already committed images)
+ */
+async function resolveEpisodeImage(urlPath) {
+  const match = urlPath.match(/^\/images\/episodes\/(\d{4})\/(\d{2})\/([^/]+)\/(.+)$/);
+  if (!match) return null;
+  const [, year, month, number, fileName] = match;
+  const safeName = path.basename(fileName);
+  const staged = path.join(STAGING_ROOT, `${year}-${month}-${number}`, safeName);
+  if (await pathExists(staged)) return staged;
+  const inRepo = path.join(SITE_PUBLIC_DIR, 'images', 'episodes', year, month, number, safeName);
+  if (await pathExists(inRepo)) return inRepo;
+  return null;
+}
+
 async function serveStatic(req, res, urlPath) {
+  if (urlPath === '/favicon.ico') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  if (urlPath.startsWith('/images/episodes/')) {
+    const imagePath = await resolveEpisodeImage(urlPath);
+    if (imagePath) {
+      const data = await readFile(imagePath);
+      res.writeHead(200, { 'Content-Type': contentTypeFor(imagePath) });
+      res.end(data);
+      return;
+    }
+    sendJson(res, 404, { error: 'image not found' });
+    return;
+  }
+
   const safe = path.normalize(urlPath).replace(/^(\.\.[/\\])+/, '');
   const filePath = path.join(PUBLIC_DIR, safe === '/' ? 'index.html' : safe);
   if (!filePath.startsWith(PUBLIC_DIR)) {
@@ -132,6 +183,7 @@ function parseTags(raw) {
     .filter(Boolean);
 }
 
+/** Content-only payload for preview gating (excludes upload filenames). */
 function buildPreviewPayload(fields) {
   return {
     number: String(fields.number || ''),
@@ -144,9 +196,7 @@ function buildPreviewPayload(fields) {
     periodName: String(fields.periodName || ''),
     tags: parseTags(Array.isArray(fields.tags) ? fields.tags.join(',') : fields.tags || ''),
     duration: String(fields.duration || ''),
-    body: String(fields.body || ''),
-    coverName: String(fields.coverName || ''),
-    audioName: String(fields.audioName || ''),
+    body: String(fields.body || '').replace(/\r\n/g, '\n'),
   };
 }
 
@@ -187,6 +237,7 @@ async function handlePreview(req, res) {
   }
   const bodyHtml = marked.parse(payload.body);
   const token = previewTokenFor(payload);
+  previewSessions.set(token, { payload, createdAt: Date.now() });
   sendJson(res, 200, { bodyHtml, previewToken: token, payload });
 }
 
@@ -211,8 +262,7 @@ async function handleImageInsert(req, res) {
     month,
     number,
   });
-  // Stage under tool temp preview dir (not repo) so publish remains the write gate
-  const stagingDir = path.join(tmpdir(), 'kedma-episode-staging', `${year}-${month}-${number}`);
+  const stagingDir = path.join(STAGING_ROOT, `${year}-${month}-${number}`);
   await mkdir(stagingDir, { recursive: true });
   const safeName = path.basename(image.filename).replace(/[^\w.\u0590-\u05FFa-zA-Z0-9_-]+/g, '_');
   const dest = path.join(stagingDir, safeName);
@@ -229,16 +279,19 @@ async function handleImageInsert(req, res) {
 
 async function handlePublish(req, res) {
   const { fields, files } = await parseMultipart(req);
-  const payload = buildPreviewPayload({
-    ...fields,
-    coverName: files.cover?.filename || fields.coverName || '',
-    audioName: files.audio?.filename || fields.audioName || '',
-  });
+  const payload = buildPreviewPayload(fields);
+  const token = fields.previewToken || '';
+  const session = previewSessions.get(token);
   const expected = previewTokenFor(payload);
-  if (!fields.previewToken || fields.previewToken !== expected) {
+
+  if (!token || !session || token !== expected) {
     for (const f of Object.values(files)) await unlink(f.path).catch(() => {});
     sendJson(res, 400, {
-      error: 'Preview required before publish (form changed since last preview).',
+      error:
+        'Preview required before publish (form changed since last preview). Click תצוגה מקדימה again, then פרסם.',
+      hint: !session
+        ? 'preview session missing — preview again'
+        : 'form fields no longer match the last preview',
     });
     return;
   }
@@ -259,7 +312,6 @@ async function handlePublish(req, res) {
     }
   }
 
-  // Include staged body images referenced by filename list
   if (fields.stagedImages) {
     try {
       const staged = JSON.parse(fields.stagedImages);
@@ -298,6 +350,7 @@ async function handlePublish(req, res) {
       overwrite: fields.overwrite === '1',
       dryRun: process.env.PUBLISH_DRY_RUN === '1' || fields.dryRun === '1',
     });
+    previewSessions.delete(token);
     sendJson(res, 200, result);
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
