@@ -349,12 +349,228 @@
     @apply w-16 shrink-0 pt-0.5 text-start font-body text-label-sm text-on-surface-variant;
   }
 
-  .periods-table-row {
-    @apply cursor-pointer;
+  .archive-grid {
+    @apply grid grid-cols-1 gap-6;
   }
 
-  .periods-table-thumb {
-    @apply aspect-square;
+  @media (min-width: 800px) {
+    .archive-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1.5rem 1.25rem;
+    }
+
+    .archive-card-feature {
+      grid-column: span 7;
+    }
+
+    .archive-card-side {
+      grid-column: span 5;
+    }
+
+    .archive-card-standard {
+      grid-column: span 4;
+    }
+  }
+
+  .archive-card {
+    @apply block rounded border border-outline-variant/30 bg-surface/60 p-5 transition-[border-color,box-shadow,transform] duration-200 md:p-6;
+  }
+
+  .archive-card:hover {
+    @apply border-aged-gold/40;
+    box-shadow: 0 12px 28px rgba(5, 17, 37, 0.08);
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .archive-card:hover {
+      transform: none;
+    }
+  }
+
+  .archive-card-standard,
+  .archive-card-side {
+    @apply flex flex-col gap-4;
+  }
+
+  /* Feature: floated media stack (image + date/period under it); title/body wrap beside. */
+  .archive-card-feature {
+    display: flow-root;
+  }
+
+  .archive-card-media {
+    @apply aspect-square w-full shrink-0 overflow-hidden;
+  }
+
+  .archive-card-feature-media {
+    @apply mb-3 w-full;
+  }
+
+  .archive-card-feature-media .archive-card-media {
+    @apply mb-2 w-full;
+  }
+
+  @media (min-width: 800px) {
+    .archive-card-feature-media {
+      float: inline-start;
+      width: 52%;
+      margin: 0;
+      margin-inline-end: 1.1rem;
+      margin-bottom: 0.65rem;
+    }
+  }
+
+  .archive-card-feature .archive-card-lede {
+    @apply m-0 leading-snug;
+  }
+
+  .archive-card-feature .archive-card-meta {
+    clear: both;
+    @apply m-0;
+  }
+
+  .archive-card-side .archive-card-media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .archive-card-excerpt {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .archive-card-standard .archive-card-excerpt {
+    -webkit-line-clamp: 2;
+  }
+
+  .archive-card-side .archive-card-excerpt {
+    -webkit-line-clamp: 3;
+  }
+
+  .timeline {
+    @apply mx-auto max-w-3xl;
+  }
+
+  .timeline-era {
+    @apply mb-10 last:mb-0;
+  }
+
+  .timeline-era-label {
+    @apply sticky z-10 mb-3 inline-flex items-center gap-2 rounded-full bg-ink-blue px-3.5 py-1.5 font-body text-label-sm font-bold text-parchment-base;
+    /* Sit below the pinned HomeHeader (map third + nav). */
+    top: calc((100vw * 1033 / 5162 / 3) + 3.25rem);
+    box-shadow: 0 6px 16px rgba(5, 17, 37, 0.16);
+  }
+
+  .timeline-era-label::before {
+    content: '';
+    @apply size-1.5 shrink-0 rounded-full bg-aged-gold;
+  }
+
+  .timeline-rail {
+    @apply relative flex flex-col gap-2 border-s-2 border-aged-gold/50 ps-4;
+  }
+
+  .timeline-row {
+    @apply relative flex items-center gap-3 rounded border border-outline-variant/40 bg-surface/70 px-3 py-2.5 transition-[border-color,box-shadow,transform] duration-200;
+  }
+
+  .timeline-row::before {
+    content: '';
+    @apply absolute -start-[1.2rem] size-2.5 rounded-full border-2 border-aged-gold bg-background;
+  }
+
+  .timeline-row:hover {
+    @apply border-aged-gold/45;
+    box-shadow: 0 8px 20px rgba(5, 17, 37, 0.07);
+    transform: translateX(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-row:hover {
+      transform: none;
+    }
+  }
+
+  .timeline-thumb {
+    @apply size-12 shrink-0 rounded border border-outline-variant/40 object-cover;
+  }
+
+  .timeline-thumb-empty {
+    @apply bg-surface-container;
+  }
+
+  /*
+   * Periods split timeline (RTL):
+   *   [episodes ← left]  |time line|  [period titles → right]
+   * Grid col 1 is inline-start (= physical right in RTL).
+   */
+  .periods-timeline {
+    @apply relative mx-auto max-w-5xl;
+  }
+
+  .periods-timeline::before {
+    content: '';
+    @apply pointer-events-none absolute inset-y-0 w-0.5 bg-aged-gold/55;
+    inset-inline-start: 12.75rem;
+  }
+
+  .periods-era {
+    @apply relative mb-8 grid last:mb-0;
+    grid-template-columns: 12rem 1fr;
+    column-gap: 1.75rem;
+  }
+
+  .periods-era-title {
+    @apply sticky z-10 self-start pe-2 text-end font-body text-label-lg font-bold leading-snug text-ink-blue;
+    top: calc((100vw * 1033 / 5162 / 3) + 3.25rem);
+  }
+
+  .periods-era-dot {
+    @apply absolute top-1.5 size-2.5 rounded-full border-2 border-aged-gold bg-background;
+    inset-inline-start: calc(12.75rem - 0.3rem);
+  }
+
+  .periods-era-episodes {
+    @apply flex flex-col gap-2;
+  }
+
+  .periods-episode {
+    @apply flex items-center gap-3 rounded border border-outline-variant/40 bg-surface/70 px-3 py-2.5 transition-[border-color,box-shadow,transform] duration-200;
+  }
+
+  .periods-episode:hover {
+    @apply border-aged-gold/45;
+    box-shadow: 0 8px 20px rgba(5, 17, 37, 0.07);
+    transform: translateX(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .periods-episode:hover {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .periods-timeline::before {
+      inset-inline-start: 0.35rem;
+    }
+
+    .periods-era {
+      grid-template-columns: 1fr;
+      padding-inline-start: 1.35rem;
+      row-gap: 0.75rem;
+    }
+
+    .periods-era-title {
+      @apply relative ps-4;
+      top: auto;
+    }
+
+    .periods-era-dot {
+      inset-inline-start: -1.05rem;
+      top: 0.35rem;
+    }
   }
 
   .hero-header {

@@ -1,13 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeHeader from '@/components/HomeHeader.astro';
-import { episodeUrl, getEpisodes } from '@/lib/episodes';
+import { episodeUrl, episodesByPeriod, getEpisodes } from '@/lib/episodes';
 import { withBase } from '@/lib/paths';
 
 const episodes = await getEpisodes();
-const periodEpisodes = episodes
-  .filter((episode) => episode.data.period != null)
-  .sort((a, b) => a.data.period! - b.data.period!);
+const periodEpisodes = episodes.filter((episode) => episode.data.period != null);
+const eras = episodesByPeriod(periodEpisodes);
 ---
 
 <BaseLayout title="תקופות" description="האזינו לפודקאסט קדמא לפי סדר תקופות היסטוריות">
@@ -22,82 +21,46 @@ const periodEpisodes = episodes
     </header>
 
     {
-      periodEpisodes.length === 0 ? (
+      eras.size === 0 ? (
         <p class="rounded border border-dashed border-outline-variant p-6 text-on-surface-variant">
           עדיין לא הוגדרו תקופות. מלאו את <code class="text-ink-blue">migration/period-map.csv</code> והריצו שוב את
           המיגרציה.
         </p>
       ) : (
-        <div class="card overflow-hidden">
-          <table class="periods-table w-full">
-            <thead>
-              <tr>
-                <th scope="col" class="w-20 px-4 py-4">
-                  <span class="sr-only">תמונה</span>
-                </th>
-                <th scope="col" class="px-4 py-4 text-start font-body text-label-sm font-semibold text-on-surface-variant">
-                  שם הפרק
-                </th>
-                <th scope="col" class="px-6 py-4 text-start font-body text-label-sm font-semibold text-on-surface-variant">
-                  תקופה
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {periodEpisodes.map((episode) => {
-                const url = episodeUrl(episode);
-                const { title, image, periodName } = episode.data;
-                return (
-                  <tr
-                    class="periods-table-row border-t border-outline-variant/60 transition-colors hover:bg-surface-container/50"
-                    tabindex="0"
-                    role="link"
-                    data-href={url}
-                  >
-                    <td class="w-20 px-4 py-3 align-middle">
-                      {
-                        image && (
-                          <div class="periods-table-thumb size-12 shrink-0 overflow-hidden rounded border border-outline-variant/40">
-                            <img
-                              src={withBase(image)}
-                              alt=""
-                              class="size-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                        )
-                      }
-                    </td>
-                    <td class="px-4 py-3 font-body text-body-lg font-medium text-ink-blue">
-                      {title}
-                    </td>
-                    <td class="px-6 py-3 font-body text-body-md text-on-surface-variant">
-                      {periodName ?? '—'}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div class="periods-timeline">
+          {[...eras.entries()].map(([eraName, eraEpisodes]) => (
+            <section class="periods-era" aria-labelledby={`era-${eraName}`}>
+              <h2 class="periods-era-title" id={`era-${eraName}`}>
+                <span class="periods-era-dot" aria-hidden="true" />
+                {eraName}
+              </h2>
+              <div class="periods-era-episodes">
+                {eraEpisodes.map((episode) => {
+                  const url = episodeUrl(episode);
+                  const { title, image } = episode.data;
+                  return (
+                    <a href={url} class="periods-episode group">
+                      {image ? (
+                        <img
+                          src={withBase(image)}
+                          alt=""
+                          class="timeline-thumb"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span class="timeline-thumb timeline-thumb-empty" aria-hidden="true" />
+                      )}
+                      <span class="min-w-0 flex-1 font-body text-body-lg font-medium text-ink-blue transition-colors group-hover:text-secondary">
+                        {title}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       )
     }
   </main>
-
-  <script>
-    function navigatePeriodRow(row: HTMLElement) {
-      const href = row.dataset.href;
-      if (href) window.location.assign(href);
-    }
-
-    document.querySelectorAll<HTMLElement>('.periods-table-row').forEach((row) => {
-      row.addEventListener('click', () => navigatePeriodRow(row));
-      row.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          navigatePeriodRow(row);
-        }
-      });
-    });
-  </script>
 </BaseLayout>

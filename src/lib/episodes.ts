@@ -93,3 +93,29 @@ export function episodesByPeriod(episodes: Episode[]): Map<string, Episode[]> {
     }),
   );
 }
+
+/** Group episodes by publication year, oldest year first. */
+export function episodesByYear(episodes: Episode[]): Map<number, Episode[]> {
+  const grouped = new Map<number, Episode[]>();
+
+  for (const episode of episodes) {
+    const year = episode.data.date.getFullYear();
+    const list = grouped.get(year) ?? [];
+    list.push(episode);
+    grouped.set(year, list);
+  }
+
+  for (const list of grouped.values()) {
+    list.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+  }
+
+  return new Map([...grouped.entries()].sort(([a], [b]) => a - b));
+}
+
+/** Cycle variants for the home archive editorial grid. */
+export function archiveCardVariant(index: number): 'feature' | 'side' | 'standard' {
+  const slot = index % 5;
+  if (slot === 0) return 'feature';
+  if (slot === 1) return 'side';
+  return 'standard';
+}
